@@ -1,11 +1,11 @@
 import { getData } from "@/lib/store";
 import StatsCard from "@/components/admin/StatsCard";
-import { Type, AlertTriangle, Boxes, DollarSign, HelpCircle, Mail, Building2, ListOrdered, Eye, Users, Sparkles } from "lucide-react";
+import { Type, AlertTriangle, Boxes, DollarSign, HelpCircle, Mail, Building2, ListOrdered, Eye, Users, Sparkles, Globe } from "lucide-react";
 import Link from "next/link";
 
 const quickLinks = [
   { label: "Edit Hero", href: "/admin/hero", icon: Type, color: "primary" as const },
-  { label: "Features", href: "/admin/features", icon: Boxes, color: "blue" as const },
+  { label: "CRM & Features", href: "/admin/crm", icon: Boxes, color: "blue" as const },
   { label: "Pricing", href: "/admin/pricing", icon: DollarSign, color: "purple" as const },
   { label: "FAQ", href: "/admin/faq", icon: HelpCircle, color: "amber" as const },
   { label: "Industries", href: "/admin/industries", icon: Building2, color: "primary" as const },
@@ -17,7 +17,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-up">
-      {/* Welcome */}
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 md:p-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
         <div className="relative">
@@ -30,16 +29,14 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <StatsCard icon={Boxes} label="Features" value={data.features.length} change="+2" positive color="primary" />
-        <StatsCard icon={AlertTriangle} label="Challenges" value={data.challenges.length} color="blue" />
-        <StatsCard icon={DollarSign} label="Pricing Tiers" value={data.pricing.length} color="purple" />
+        <StatsCard icon={Globe} label="Sections" value={14} change="+5" positive color="primary" />
+        <StatsCard icon={Boxes} label="Industries" value={data.industries.length} color="blue" />
+        <StatsCard icon={DollarSign} label="Pricing Tiers" value={data.pricing.tiers.length} color="purple" />
         <StatsCard icon={Mail} label="Subscribers" value={data.subscribers.length} change="+12%" positive color="amber" />
       </div>
 
       <div className="grid lg:grid-cols-5 gap-4 md:gap-6">
-        {/* Quick Actions */}
         <div className="lg:col-span-3 rounded-2xl border border-white/[0.06] bg-card p-5 md:p-6">
           <h3 className="text-sm font-semibold mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -58,7 +55,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Subscribers */}
         <div className="lg:col-span-2 rounded-2xl border border-white/[0.06] bg-card p-5 md:p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold">Recent Subscribers</h3>
@@ -80,17 +76,17 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Content Overview */}
       <div className="rounded-2xl border border-white/[0.06] bg-card p-5 md:p-6">
         <h3 className="text-sm font-semibold mb-5">Content Overview</h3>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-7 gap-3">
           {[
             { label: "Hero", value: "1", href: "/admin/hero", icon: Type },
-            { label: "Challenges", value: data.challenges.length, href: "/admin/challenges", icon: AlertTriangle },
-            { label: "Features", value: data.features.length, href: "/admin/features", icon: Boxes },
+            { label: "Challenges", value: `${data.challenges.problems.length}p`, href: "/admin/challenges", icon: AlertTriangle },
             { label: "Industries", value: data.industries.length, href: "/admin/industries", icon: Building2 },
-            { label: "Steps", value: data.steps.length, href: "/admin/how-it-works", icon: ListOrdered },
-            { label: "FAQ", value: data.faq.length, href: "/admin/faq", icon: HelpCircle },
+            { label: "Steps", value: data.steps.length, href: "/admin/steps", icon: ListOrdered },
+            { label: "Pricing", value: data.pricing.tiers.length, href: "/admin/pricing", icon: DollarSign },
+            { label: "FAQ", value: data.faq.items.length, href: "/admin/faq", icon: HelpCircle },
+            { label: "Subs", value: data.subscribers.length, href: "/admin/subscribers", icon: Mail },
           ].map((item) => (
             <Link key={item.label} href={item.href} className="group text-center p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.04] hover:border-primary/20 transition-all duration-300">
               <item.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary mx-auto mb-2 transition-colors" />

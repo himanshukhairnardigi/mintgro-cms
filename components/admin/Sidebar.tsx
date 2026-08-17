@@ -5,18 +5,24 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Type, AlertTriangle, Boxes, Building2,
   ListOrdered, DollarSign, HelpCircle, Mail, Settings, Eye,
-  Zap, LogOut, X, ChevronLeft, ChevronRight,
+  Zap, LogOut, X, ChevronLeft, ChevronRight, Globe, Image,
+  Sparkles, MonitorSmartphone, Megaphone,
 } from "lucide-react";
 
 const nav = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Header / Nav", href: "/admin/header", icon: Globe },
   { label: "Hero", href: "/admin/hero", icon: Type },
+  { label: "Logo Bar", href: "/admin/logo-bar", icon: Image },
   { label: "Challenges", href: "/admin/challenges", icon: AlertTriangle },
-  { label: "Features", href: "/admin/features", icon: Boxes },
+  { label: "CRM & Features", href: "/admin/crm", icon: Boxes },
   { label: "Industries", href: "/admin/industries", icon: Building2 },
-  { label: "How It Works", href: "/admin/how-it-works", icon: ListOrdered },
+  { label: "Personalization", href: "/admin/personalization", icon: Sparkles },
+  { label: "Experience", href: "/admin/experience", icon: MonitorSmartphone },
+  { label: "Steps", href: "/admin/steps", icon: ListOrdered },
   { label: "Pricing", href: "/admin/pricing", icon: DollarSign },
   { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
+  { label: "CTA / Contact", href: "/admin/cta", icon: Megaphone },
   { label: "Subscribers", href: "/admin/subscribers", icon: Mail },
   { label: "Settings", href: "/admin/settings", icon: Settings },
   { label: "Preview", href: "/admin/preview", icon: Eye },
@@ -34,7 +40,6 @@ export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollap
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
-      {/* Logo */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-white/[0.04] shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)]">
@@ -47,13 +52,11 @@ export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollap
             </div>
           )}
         </div>
-        {/* Mobile close */}
         <button onClick={onClose} className="lg:hidden w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center">
           <X className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         <div className="space-y-1">
           {nav.map((item) => {
@@ -80,9 +83,7 @@ export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollap
         </div>
       </nav>
 
-      {/* Bottom */}
       <div className="p-3 border-t border-white/[0.04] shrink-0">
-        {/* Collapse toggle - desktop only */}
         <button
           onClick={onToggleCollapse}
           className="hidden lg:flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-all duration-200"
@@ -104,14 +105,12 @@ export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollap
 
   return (
     <>
-      {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden" onClick={onClose}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
         </div>
       )}
 
-      {/* Mobile sidebar */}
       <aside
         className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#0d0d0d] border-r border-white/[0.04] lg:hidden transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
@@ -120,7 +119,6 @@ export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollap
         {sidebarContent}
       </aside>
 
-      {/* Desktop sidebar */}
       <aside
         className={`hidden lg:block fixed top-0 bottom-0 left-0 z-30 bg-[#0d0d0d] border-r border-white/[0.04] transition-all duration-300 ${
           collapsed ? "w-[68px]" : "w-64"

@@ -1,1 +1,1 @@
-export { default } from "@/components/admin/industries/page";
+export { default } from "@/components/admin/industries-page";

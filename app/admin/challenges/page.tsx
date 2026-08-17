@@ -1,1 +1,1 @@
-export { default } from "@/components/admin/challenges/page";
+export { default } from "@/components/admin/challenges-page";

@@ -1,32 +1,60 @@
+// ─── Section: Header / Navigation ───
+export interface NavLink {
+  label: string;
+  href: string;
+  hasDropdown: boolean;
+}
+
+export interface HeaderData {
+  logo: { text: string; tagline: string };
+  navLinks: NavLink[];
+  ctaButton: { label: string; href: string };
+}
+
+// ─── Section: Logo Bar / Social Proof ───
+export interface LogoBarData {
+  heading: string;
+  subtext: string;
+  logos: { name: string }[];
+}
+
+// ─── Section: Hero ───
 export interface HeroData {
+  eyebrow: string;
+  title: string;
+  description: string;
+  ctaPrimary: { label: string; href: string };
+  ctaSecondary: { label: string; href: string };
+  trustBadges: string[];
+}
+
+// ─── Section: Challenges ───
+export interface ChallengesData {
+  eyebrow: string;
+  title: string;
+  description: string;
+  problems: string[];
+  solutions: string[];
+}
+
+// ─── Section: CRM / Features ───
+export interface CRMFeatureItem {
+  icon: string;
+  label: string;
+}
+
+export interface CRMFeatureData {
   badge: string;
   title: string;
-  subtitle: string;
   description: string;
-  ctaPrimary: string;
-  ctaSecondary: string;
-  stat1Value: string;
-  stat1Label: string;
-  stat2Value: string;
-  stat2Label: string;
-  stat3Value: string;
-  stat3Label: string;
+  categoryLabel: string;
+  featureTitle: string;
+  featureDescription: string;
+  featureList: CRMFeatureItem[];
+  dashboardStats: { label: string; value: string }[];
 }
 
-export interface ChallengeData {
-  id: string;
-  icon: string;
-  problem: string;
-  solution: string;
-}
-
-export interface FeatureData {
-  id: string;
-  icon: string;
-  title: string;
-  desc: string;
-}
-
+// ─── Section: Industries ───
 export interface IndustryData {
   id: string;
   icon: string;
@@ -34,6 +62,32 @@ export interface IndustryData {
   desc: string;
 }
 
+// ─── Section: Personalization ───
+export interface PersonalizationFeature {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface PersonalizationData {
+  categoryLabel: string;
+  title: string;
+  description: string;
+  features: PersonalizationFeature[];
+}
+
+// ─── Section: Experience ───
+export interface ExperienceData {
+  eyebrow: string;
+  title: string;
+  description: string;
+  sidebarItems: string[];
+  stats: { label: string; value: string }[];
+  devices: string[];
+}
+
+// ─── Section: Steps ───
 export interface StepData {
   id: string;
   icon: string;
@@ -42,52 +96,77 @@ export interface StepData {
   desc: string;
 }
 
-export interface PricingFeature {
-  label: string;
-  included: boolean;
-}
-
+// ─── Section: Pricing ───
 export interface PricingTier {
   id: string;
   name: string;
-  price: number;
+  price: number | null;
+  priceLabel: string;
   desc: string;
-  features: PricingFeature[];
+  features: string[];
   cta: string;
   popular: boolean;
 }
 
+export interface PricingData {
+  eyebrow: string;
+  title: string;
+  description: string;
+  tiers: PricingTier[];
+}
+
+// ─── Section: FAQ ───
 export interface FAQItem {
   id: string;
   question: string;
   answer: string;
 }
 
+export interface FAQData {
+  eyebrow: string;
+  title: string;
+  description: string;
+  items: FAQItem[];
+  ctaButtons: { label: string; href: string; style: "primary" | "light" }[];
+}
+
+// ─── Section: CTA / Contact ───
+export interface CTASectionData {
+  eyebrow: string;
+  title: string;
+  description: string;
+  ctaPrimary: { label: string; href: string };
+  ctaSecondary: { label: string; href: string };
+}
+
+// ─── Subscribers ───
 export interface Subscriber {
   id: string;
   email: string;
   date: string;
 }
 
+// ─── Site Settings ───
 export interface SiteSettings {
   siteName: string;
   siteDescription: string;
   contactEmail: string;
-  contactPhone: string;
-  contactAddress: string;
-  twitterUrl: string;
-  linkedinUrl: string;
-  githubUrl: string;
 }
 
+// ─── Aggregate Store ───
 export interface SiteData {
+  header: HeaderData;
+  logoBar: LogoBarData;
   hero: HeroData;
-  challenges: ChallengeData[];
-  features: FeatureData[];
+  challenges: ChallengesData;
+  crm: CRMFeatureData;
   industries: IndustryData[];
+  personalization: PersonalizationData;
+  experience: ExperienceData;
   steps: StepData[];
-  pricing: PricingTier[];
-  faq: FAQItem[];
+  pricing: PricingData;
+  faq: FAQData;
+  ctaSection: CTASectionData;
   subscribers: Subscriber[];
   settings: SiteSettings;
 }

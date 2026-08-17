@@ -5,13 +5,18 @@ import { Menu, Bell, Search } from "lucide-react";
 
 const titles: Record<string, string> = {
   "/admin": "Dashboard",
+  "/admin/header": "Header / Navigation",
   "/admin/hero": "Hero Section",
+  "/admin/logo-bar": "Logo Bar",
   "/admin/challenges": "Challenges",
-  "/admin/features": "Features",
+  "/admin/crm": "CRM & Features",
   "/admin/industries": "Industries",
-  "/admin/how-it-works": "How It Works",
+  "/admin/personalization": "Personalization",
+  "/admin/experience": "Experience",
+  "/admin/steps": "How It Works",
   "/admin/pricing": "Pricing Plans",
   "/admin/faq": "FAQ",
+  "/admin/cta": "CTA / Contact",
   "/admin/subscribers": "Subscribers",
   "/admin/settings": "Settings",
   "/admin/preview": "Live Preview",
@@ -19,13 +24,18 @@ const titles: Record<string, string> = {
 
 const subtitles: Record<string, string> = {
   "/admin": "Overview of your site content",
+  "/admin/header": "Manage navigation links and logo",
   "/admin/hero": "Edit homepage hero content",
+  "/admin/logo-bar": "Manage trusted-by logo bar",
   "/admin/challenges": "Manage challenges & solutions",
-  "/admin/features": "Add, edit or remove features",
+  "/admin/crm": "Manage CRM spotlight & feature list",
   "/admin/industries": "Configure industry cards",
-  "/admin/how-it-works": "Manage onboarding steps",
+  "/admin/personalization": "Edit personalization features",
+  "/admin/experience": "Manage experience showcase",
+  "/admin/steps": "Manage onboarding steps",
   "/admin/pricing": "Edit pricing tiers & features",
   "/admin/faq": "Manage frequently asked questions",
+  "/admin/cta": "Edit call-to-action section",
   "/admin/subscribers": "View & export subscribers",
   "/admin/settings": "Global site configuration",
   "/admin/preview": "Preview your live site",
@@ -56,7 +66,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Search - hidden on small screens */}
         <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs text-muted-foreground">
           <Search className="w-3.5 h-3.5" />
           <span>Search...</span>

@@ -7,6 +7,6 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   const body = await request.json();
-  const data = updateData({ hero: body });
-  return NextResponse.json(data.hero);
+  const updated = updateData({ hero: body });
+  return NextResponse.json(updated.hero);
 }

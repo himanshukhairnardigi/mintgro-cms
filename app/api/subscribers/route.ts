@@ -6,20 +6,19 @@ export async function GET() {
   return NextResponse.json(getData().subscribers);
 }
 
-export async function PUT(request: Request) {
-  const body: Subscriber[] = await request.json();
-  const data = updateData({ subscribers: body });
-  return NextResponse.json(data.subscribers);
-}
-
 export async function POST(request: Request) {
   const { email } = await request.json();
-  const data = getData();
   const newSub: Subscriber = {
     id: `sub${Date.now()}`,
     email,
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().slice(0, 10),
   };
-  const updated = updateData({ subscribers: [...data.subscribers, newSub] });
+  const updated = updateData({ subscribers: [...getData().subscribers, newSub] });
+  return NextResponse.json(updated.subscribers);
+}
+
+export async function PUT(request: Request) {
+  const body = await request.json();
+  const updated = updateData({ subscribers: body });
   return NextResponse.json(updated.subscribers);
 }
