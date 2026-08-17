@@ -136,3 +136,64 @@ body { background-color: #0a0a0a; color: #fafafa; font-family: "Inter", sans-ser
   20%, 40%, 60%, 80% { transform: translateX(4px); }
 }
 .animate-shake { animation: shake 0.4s ease-in-out; }
+
+/* ─── CMS Modern Utilities ─── */
+.cms-section-card {
+  @apply rounded-2xl border border-white/[0.06] bg-card p-6 transition-all duration-300;
+  &:hover {
+    border-color: rgba(16, 185, 129, 0.15);
+    box-shadow: 0 4px 24px rgba(16, 185, 129, 0.04);
+  }
+}
+
+.cms-section-label {
+  @apply text-xs font-medium text-muted-foreground uppercase tracking-wider;
+}
+
+.cms-preview-eyebrow {
+  @apply inline-block text-[10px] font-bold uppercase tracking-[0.12em] text-primary bg-primary/10 px-3 py-1 rounded-full;
+}
+
+.cms-preview-title {
+  @apply text-2xl font-bold text-foreground sm:text-3xl;
+}
+
+.cms-preview-desc {
+  @apply text-sm text-muted-foreground max-w-2xl;
+}
+
+.cms-badge {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider;
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.cms-badge-blue {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+}
+
+.cms-badge-amber {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider;
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+}
+
+.cms-badge-purple {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider;
+  background-color: rgba(168, 85, 247, 0.1);
+  color: #c084fc;
+}
+
+.cms-stat-ring {
+  @apply w-10 h-10 rounded-full flex items-center justify-center;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.3); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.animate-pulse-ring { animation: pulse-ring 2s infinite; }
