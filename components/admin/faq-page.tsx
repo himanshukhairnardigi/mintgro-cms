@@ -118,7 +118,7 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       {toast.show && (
         <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
           {toast.message}
@@ -174,9 +174,9 @@ export default function FAQPage() {
                         e.stopPropagation();
                         removeItem(item.id);
                       }}
-                      className="btn-ghost text-destructive p-1"
+                      className="btn-ghost text-destructive p-2"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                     <ChevronDown
                       className={`w-4 h-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -208,7 +208,7 @@ export default function FAQPage() {
             );
           })}
         </div>
-        <button onClick={addItem} className="btn-secondary flex items-center gap-2">
+        <button onClick={addItem} className="btn-secondary flex items-center gap-2 text-sm">
           <Plus className="w-4 h-4" />
           Add Question
         </button>
@@ -239,13 +239,13 @@ export default function FAQPage() {
                 <option value="primary">Primary</option>
                 <option value="light">Light</option>
               </select>
-              <button onClick={() => removeCtaButton(i)} className="btn-ghost text-destructive">
+              <button onClick={() => removeCtaButton(i)} className="btn-ghost text-destructive p-2">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
           ))}
         </div>
-        <button onClick={addCtaButton} className="btn-secondary flex flex-col sm:flex-row sm:items-center gap-2">
+        <button onClick={addCtaButton} className="btn-secondary flex items-center gap-2 text-sm">
           <Plus className="w-4 h-4" />
           Add Button
         </button>

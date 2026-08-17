@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { IndustryData } from "@/lib/types";
 import Toast from "@/components/admin/Toast";
 
@@ -80,30 +80,33 @@ export default function IndustriesPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-destructive">{error}</p>
+        <p className="text-destructive text-sm">{error}</p>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="shimmer w-48 h-8 rounded-lg" />
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-up">
+    <div className="space-y-6 animate-fade-up">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Industries</h1>
           <p className="text-muted-foreground mt-1">Manage industry cards shown on the site.</p>
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          {saving ? "Saving..." : "Save"}
-        </button>
+        <div className="self-start">
+          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+            <Save className="w-4 h-4" />
+            Save
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -112,48 +115,42 @@ export default function IndustriesPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-muted-foreground">Industry {i + 1}</h3>
               <button onClick={() => removeIndustry(i)} className="btn-ghost text-destructive p-2">
-                <X className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm text-muted-foreground">Icon</label>
-                <select
-                  value={industry.icon}
-                  onChange={(e) => update(i, "icon", e.target.value)}
-                  className="select-modern w-full"
-                >
-                  {ICON_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-muted-foreground">Name</label>
-                <input
-                  type="text"
-                  value={industry.name}
-                  onChange={(e) => update(i, "name", e.target.value)}
-                  className="input-modern w-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-muted-foreground">Description</label>
-                <input
-                  type="text"
-                  value={industry.desc}
-                  onChange={(e) => update(i, "desc", e.target.value)}
-                  className="input-modern w-full"
-                />
-              </div>
+              <label className="text-xs text-muted-foreground block mb-1">Icon</label>
+              <select
+                value={industry.icon}
+                onChange={(e) => update(i, "icon", e.target.value)}
+                className="select-modern w-full"
+              >
+                {ICON_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+              <label className="text-xs text-muted-foreground block mb-1">Name</label>
+              <input
+                type="text"
+                value={industry.name}
+                onChange={(e) => update(i, "name", e.target.value)}
+                className="input-modern w-full"
+              />
+              <label className="text-xs text-muted-foreground block mb-1">Description</label>
+              <input
+                type="text"
+                value={industry.desc}
+                onChange={(e) => update(i, "desc", e.target.value)}
+                className="input-modern w-full"
+              />
             </div>
           </div>
         ))}
       </div>
 
-      <button onClick={addIndustry} className="btn-secondary flex items-center gap-2">
+      <button onClick={addIndustry} className="btn-secondary flex items-center gap-2 text-sm">
         <Plus className="w-4 h-4" />
         Add Industry
       </button>

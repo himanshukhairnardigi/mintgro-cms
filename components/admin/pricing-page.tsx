@@ -128,7 +128,7 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       {toast.show && (
         <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
           {toast.message}
@@ -182,7 +182,7 @@ export default function PricingPage() {
                   />
                   Popular
                 </label>
-                <button onClick={() => removeTier(tier.id)} className="btn-ghost text-destructive">
+                <button onClick={() => removeTier(tier.id)} className="btn-ghost text-destructive p-2">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -243,18 +243,18 @@ export default function PricingPage() {
                     onChange={(e) => updateFeature(ti, fi, e.target.value)}
                     className="input-modern flex-1"
                   />
-                  <button onClick={() => removeFeature(ti, fi)} className="btn-ghost text-destructive">
-                    <Trash2 className="w-3 h-3" />
+                  <button onClick={() => removeFeature(ti, fi)} className="btn-ghost text-destructive p-2">
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               ))}
-              <button onClick={() => addFeature(ti)} className="btn-ghost text-sm flex items-center gap-1">
-                <Plus className="w-3 h-3" /> Add Feature
+              <button onClick={() => addFeature(ti)} className="btn-secondary flex items-center gap-2 text-sm">
+                <Plus className="w-4 h-4" /> Add Feature
               </button>
             </div>
           </div>
         ))}
-        <button onClick={addTier} className="btn-secondary flex items-center gap-2">
+        <button onClick={addTier} className="btn-secondary flex items-center gap-2 text-sm">
           <Plus className="w-4 h-4" />
           Add Tier
         </button>

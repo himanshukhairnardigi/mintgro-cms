@@ -95,7 +95,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       {toast.show && (
         <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
           {toast.message}
@@ -108,7 +108,7 @@ export default function SettingsPage() {
           <p className="text-muted-foreground mt-1">Manage site settings and data</p>
         </div>
         <div className="flex items-center gap-3 self-start">
-          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2 self-start">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save
           </button>

@@ -98,7 +98,7 @@ export default function StepsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       {toast.show && (
         <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
           {toast.message}
@@ -119,7 +119,7 @@ export default function StepsPage() {
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
         <div className="space-y-4">
           {data.map((step, i) => (
-            <div key={step.id} className="flex items-start gap-3 p-4 rounded-xl border border-white/[0.06] bg-background/50">
+            <div key={step.id} className="flex items-start gap-3 p-4 rounded-xl border border-white/[0.06] bg-background/50 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 flex-1">
                 <div>
                   <label className="block text-xs text-muted-foreground mb-1">Step</label>
@@ -154,13 +154,13 @@ export default function StepsPage() {
                   />
                 </div>
               </div>
-              <button onClick={() => removeStep(step.id)} className="btn-ghost text-destructive mt-2">
+              <button onClick={() => removeStep(step.id)} className="btn-ghost text-destructive p-2">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
           ))}
         </div>
-        <button onClick={addStep} className="btn-secondary flex items-center gap-2">
+        <button onClick={addStep} className="btn-secondary flex items-center gap-2 text-sm">
           <Plus className="w-4 h-4" />
           Add Step
         </button>

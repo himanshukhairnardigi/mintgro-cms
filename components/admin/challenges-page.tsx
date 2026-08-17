@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { ChallengesData } from "@/lib/types";
 import Toast from "@/components/admin/Toast";
 
@@ -9,11 +9,13 @@ export default function ChallengesPage() {
   const [data, setData] = useState<ChallengesData | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "" });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/challenges")
       .then((r) => r.json())
-      .then(setData);
+      .then(setData)
+      .catch(() => setError("Failed to load data"));
   }, []);
 
   const update = useCallback(
@@ -32,13 +34,20 @@ export default function ChallengesPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/challenges", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    setSaving(false);
-    setToast({ show: true, message: "Challenges saved" });
+    setError(null);
+    try {
+      const res = await fetch("/api/challenges", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Challenges saved" });
+    } catch {
+      setError("Failed to save data");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addProblem = () => {
@@ -61,32 +70,31 @@ export default function ChallengesPage() {
     setData({ ...data, solutions: data.solutions.filter((_, i) => i !== index) });
   };
 
-  if (!data) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="shimmer w-48 h-8 rounded-lg" />
-      </div>
-    );
-  }
+  if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
+
+  if (error) return <div className="p-8 text-destructive text-sm">{error}</div>;
 
   return (
-    <div className="space-y-8 animate-fade-up">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-up">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Challenges Section</h1>
           <p className="text-muted-foreground mt-1">Manage problems and solutions content.</p>
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          {saving ? "Saving..." : "Save"}
-        </button>
+        <div className="self-start">
+          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+            <Save className="w-4 h-4" />
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+            Save
+          </button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Content</h2>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Eyebrow</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Eyebrow</label>
             <input
               type="text"
               value={data.eyebrow}
@@ -94,8 +102,8 @@ export default function ChallengesPage() {
               className="input-modern w-full"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Title</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Title</label>
             <input
               type="text"
               value={data.title}
@@ -103,8 +111,8 @@ export default function ChallengesPage() {
               className="input-modern w-full"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Description</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Description</label>
             <textarea
               value={data.description}
               onChange={(e) => update("description", e.target.value)}
@@ -140,7 +148,7 @@ export default function ChallengesPage() {
                   className="input-modern flex-1"
                 />
                 <button onClick={() => removeProblem(i)} className="btn-ghost text-destructive p-2">
-                  <X className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -171,7 +179,7 @@ export default function ChallengesPage() {
                   className="input-modern flex-1"
                 />
                 <button onClick={() => removeSolution(i)} className="btn-ghost text-destructive p-2">
-                  <X className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}

@@ -102,7 +102,7 @@ export default function SubscribersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       {toast.show && (
         <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
           {toast.message}
@@ -131,7 +131,7 @@ export default function SubscribersPage() {
             placeholder="email@example.com"
             className="input-modern flex-1"
           />
-          <button onClick={addSubscriber} className="btn-primary flex items-center gap-2">
+          <button onClick={addSubscriber} className="btn-secondary flex items-center gap-2 text-sm">
             <Plus className="w-4 h-4" />
             Add
           </button>
@@ -145,7 +145,7 @@ export default function SubscribersPage() {
         ) : (
           <div className="space-y-2">
             {data.map((sub) => (
-              <div key={sub.id} className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] bg-background/50">
+              <div key={sub.id} className="flex items-center justify-between p-4 rounded-xl border border-white/[0.06] bg-background/50 space-y-3">
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-muted-foreground" />
                   <div>
@@ -155,7 +155,7 @@ export default function SubscribersPage() {
                     </span>
                   </div>
                 </div>
-                <button onClick={() => removeSubscriber(sub.id)} className="btn-ghost text-destructive p-1">
+                <button onClick={() => removeSubscriber(sub.id)} className="btn-ghost text-destructive p-2">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>

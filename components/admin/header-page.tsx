@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { HeaderData } from "@/lib/types";
 import Toast from "@/components/admin/Toast";
 
@@ -9,11 +9,13 @@ export default function HeaderPage() {
   const [data, setData] = useState<HeaderData | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "" });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/header")
       .then((r) => r.json())
-      .then(setData);
+      .then(setData)
+      .catch(() => setError("Failed to load data"));
   }, []);
 
   const update = useCallback(
@@ -32,13 +34,20 @@ export default function HeaderPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/header", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    setSaving(false);
-    setToast({ show: true, message: "Header saved" });
+    setError(null);
+    try {
+      const res = await fetch("/api/header", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Header saved" });
+    } catch {
+      setError("Failed to save data");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addNavLink = () => {
@@ -57,32 +66,31 @@ export default function HeaderPage() {
     });
   };
 
-  if (!data) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="shimmer w-48 h-8 rounded-lg" />
-      </div>
-    );
-  }
+  if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
+
+  if (error) return <div className="p-8 text-destructive text-sm">{error}</div>;
 
   return (
-    <div className="space-y-8 animate-fade-up">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-up">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Header / Navigation</h1>
           <p className="text-muted-foreground mt-1">Manage your site logo, navigation links, and CTA button.</p>
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          {saving ? "Saving..." : "Save"}
-        </button>
+        <div className="self-start">
+          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+            <Save className="w-4 h-4" />
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+            Save
+          </button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Logo</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Logo Text</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Logo Text</label>
             <input
               type="text"
               value={data.logo.text}
@@ -90,8 +98,8 @@ export default function HeaderPage() {
               className="input-modern w-full"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Tagline</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Tagline</label>
             <input
               type="text"
               value={data.logo.tagline}
@@ -103,7 +111,7 @@ export default function HeaderPage() {
       </div>
 
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="text-lg font-semibold text-foreground">Navigation Links</h2>
           <button onClick={addNavLink} className="btn-secondary flex items-center gap-2 text-sm">
             <Plus className="w-4 h-4" />
@@ -137,7 +145,7 @@ export default function HeaderPage() {
                 Dropdown
               </label>
               <button onClick={() => removeNavLink(i)} className="btn-ghost text-destructive p-2">
-                <X className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
           ))}
@@ -147,8 +155,8 @@ export default function HeaderPage() {
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">CTA Button</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Button Label</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Button Label</label>
             <input
               type="text"
               value={data.ctaButton.label}
@@ -156,8 +164,8 @@ export default function HeaderPage() {
               className="input-modern w-full"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Button Href</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Button Href</label>
             <input
               type="text"
               value={data.ctaButton.href}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { ExperienceData } from "@/lib/types";
 import Toast from "@/components/admin/Toast";
 
@@ -85,62 +85,59 @@ export default function ExperiencePage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-destructive">{error}</p>
+        <p className="text-destructive text-sm">{error}</p>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="shimmer w-48 h-8 rounded-lg" />
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-up">
+    <div className="space-y-6 animate-fade-up">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Experience Section</h1>
           <p className="text-muted-foreground mt-1">Manage sidebar items, stats, and supported devices.</p>
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          {saving ? "Saving..." : "Save"}
-        </button>
+        <div className="self-start">
+          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+            <Save className="w-4 h-4" />
+            Save
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+          </button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Content</h2>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Eyebrow</label>
-            <input
-              type="text"
-              value={data.eyebrow}
-              onChange={(e) => update("eyebrow", e.target.value)}
-              className="input-modern w-full"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Title</label>
-            <input
-              type="text"
-              value={data.title}
-              onChange={(e) => update("title", e.target.value)}
-              className="input-modern w-full"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Description</label>
-            <textarea
-              value={data.description}
-              onChange={(e) => update("description", e.target.value)}
-              rows={3}
-              className="input-modern w-full resize-none"
-            />
-          </div>
+          <label className="text-xs text-muted-foreground block mb-1">Eyebrow</label>
+          <input
+            type="text"
+            value={data.eyebrow}
+            onChange={(e) => update("eyebrow", e.target.value)}
+            className="input-modern w-full"
+          />
+          <label className="text-xs text-muted-foreground block mb-1">Title</label>
+          <input
+            type="text"
+            value={data.title}
+            onChange={(e) => update("title", e.target.value)}
+            className="input-modern w-full"
+          />
+          <label className="text-xs text-muted-foreground block mb-1">Description</label>
+          <textarea
+            value={data.description}
+            onChange={(e) => update("description", e.target.value)}
+            rows={3}
+            className="input-modern w-full resize-none"
+          />
         </div>
       </div>
 
@@ -169,7 +166,7 @@ export default function ExperiencePage() {
                   className="input-modern flex-1"
                 />
                 <button onClick={() => removeSidebarItem(i)} className="btn-ghost text-destructive p-2 self-end">
-                  <X className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -202,7 +199,7 @@ export default function ExperiencePage() {
                   className="input-modern sm:w-28"
                 />
                 <button onClick={() => removeStat(i)} className="btn-ghost text-destructive p-2 self-end">
-                  <X className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -233,7 +230,7 @@ export default function ExperiencePage() {
                   className="input-modern flex-1"
                 />
                 <button onClick={() => removeDevice(i)} className="btn-ghost text-destructive p-2 self-end">
-                  <X className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}

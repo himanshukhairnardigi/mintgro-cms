@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { PersonalizationData } from "@/lib/types";
 import Toast from "@/components/admin/Toast";
 
@@ -71,62 +71,59 @@ export default function PersonalizationPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-destructive">{error}</p>
+        <p className="text-destructive text-sm">{error}</p>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="shimmer w-48 h-8 rounded-lg" />
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-up">
+    <div className="space-y-6 animate-fade-up">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Personalization</h1>
           <p className="text-muted-foreground mt-1">Manage personalization content and feature cards.</p>
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          {saving ? "Saving..." : "Save"}
-        </button>
+        <div className="self-start">
+          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+            <Save className="w-4 h-4" />
+            Save
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+          </button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Content</h2>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Category Label</label>
-            <input
-              type="text"
-              value={data.categoryLabel}
-              onChange={(e) => update("categoryLabel", e.target.value)}
-              className="input-modern w-full"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Title</label>
-            <input
-              type="text"
-              value={data.title}
-              onChange={(e) => update("title", e.target.value)}
-              className="input-modern w-full"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Description</label>
-            <textarea
-              value={data.description}
-              onChange={(e) => update("description", e.target.value)}
-              rows={3}
-              className="input-modern w-full resize-none"
-            />
-          </div>
+          <label className="text-xs text-muted-foreground block mb-1">Category Label</label>
+          <input
+            type="text"
+            value={data.categoryLabel}
+            onChange={(e) => update("categoryLabel", e.target.value)}
+            className="input-modern w-full"
+          />
+          <label className="text-xs text-muted-foreground block mb-1">Title</label>
+          <input
+            type="text"
+            value={data.title}
+            onChange={(e) => update("title", e.target.value)}
+            className="input-modern w-full"
+          />
+          <label className="text-xs text-muted-foreground block mb-1">Description</label>
+          <textarea
+            value={data.description}
+            onChange={(e) => update("description", e.target.value)}
+            rows={3}
+            className="input-modern w-full resize-none"
+          />
         </div>
       </div>
 
@@ -143,42 +140,36 @@ export default function PersonalizationPage() {
             <div key={feature.id} className="rounded-xl border border-white/[0.04] bg-background/50 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Feature {i + 1}</span>
-                <button onClick={() => removeFeature(i)} className="btn-ghost text-destructive p-1.5">
-                  <X className="w-4 h-4" />
+                <button onClick={() => removeFeature(i)} className="btn-ghost text-destructive p-2">
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className="text-xs text-muted-foreground">Icon</label>
-                  <input
-                    type="text"
-                    value={feature.icon}
-                    onChange={(e) => update(`features.${i}.icon`, e.target.value)}
-                    placeholder="Icon name"
-                    className="input-modern w-full"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs text-muted-foreground">Title</label>
-                  <input
-                    type="text"
-                    value={feature.title}
-                    onChange={(e) => update(`features.${i}.title`, e.target.value)}
-                    placeholder="Title"
-                    className="input-modern w-full"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs text-muted-foreground">Description</label>
-                <textarea
-                  value={feature.description}
-                  onChange={(e) => update(`features.${i}.description`, e.target.value)}
-                  placeholder="Description"
-                  rows={2}
-                  className="input-modern w-full resize-none"
+                <label className="text-xs text-muted-foreground block mb-1">Icon</label>
+                <input
+                  type="text"
+                  value={feature.icon}
+                  onChange={(e) => update(`features.${i}.icon`, e.target.value)}
+                  placeholder="Icon name"
+                  className="input-modern w-full"
+                />
+                <label className="text-xs text-muted-foreground block mb-1">Title</label>
+                <input
+                  type="text"
+                  value={feature.title}
+                  onChange={(e) => update(`features.${i}.title`, e.target.value)}
+                  placeholder="Title"
+                  className="input-modern w-full"
                 />
               </div>
+              <label className="text-xs text-muted-foreground block mb-1">Description</label>
+              <textarea
+                value={feature.description}
+                onChange={(e) => update(`features.${i}.description`, e.target.value)}
+                placeholder="Description"
+                rows={2}
+                className="input-modern w-full resize-none"
+              />
             </div>
           ))}
         </div>
