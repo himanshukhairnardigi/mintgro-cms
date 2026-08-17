@@ -18,11 +18,16 @@ export default function FAQPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast>({ show: false, message: "" });
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/faq")
-      .then((r) => r.json())
-      .then((d) => setData(d));
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      })
+      .then((d) => setData(d))
+      .catch(() => setFetchError("Failed to load FAQ data"));
   }, []);
 
   const update = (path: string, value: unknown) => {
@@ -80,13 +85,18 @@ export default function FAQPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/faq", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/faq", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "FAQ saved" });
+    } catch {
+      setToast({ show: true, message: "Failed to save FAQ" });
+    }
     setSaving(false);
-    setToast({ show: true, message: "FAQ saved" });
   };
 
   useEffect(() => {
@@ -98,7 +108,11 @@ export default function FAQPage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        {fetchError ? (
+          <p className="text-destructive text-sm">{fetchError}</p>
+        ) : (
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        )}
       </div>
     );
   }
@@ -231,7 +245,7 @@ export default function FAQPage() {
             </div>
           ))}
         </div>
-        <button onClick={addCtaButton} className="btn-secondary flex items-center gap-2">
+        <button onClick={addCtaButton} className="btn-secondary flex flex-col sm:flex-row sm:items-center gap-2">
           <Plus className="w-4 h-4" />
           Add Button
         </button>

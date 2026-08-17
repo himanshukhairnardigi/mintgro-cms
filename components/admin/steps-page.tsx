@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { StepData } from "@/lib/types";
-import { Plus, Trash2, Save, Loader2, GripVertical } from "lucide-react";
+import { Plus, Trash2, Save, Loader2 } from "lucide-react";
 
 interface Toast {
   show: boolean;
@@ -17,11 +17,16 @@ export default function StepsPage() {
   const [data, setData] = useState<StepData[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast>({ show: false, message: "" });
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/steps")
-      .then((r) => r.json())
-      .then((d) => setData(d));
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      })
+      .then((d) => setData(d))
+      .catch(() => setFetchError("Failed to load steps data"));
   }, []);
 
   const update = (path: string, value: unknown) => {
@@ -60,13 +65,18 @@ export default function StepsPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/steps", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/steps", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Steps saved" });
+    } catch {
+      setToast({ show: true, message: "Failed to save steps" });
+    }
     setSaving(false);
-    setToast({ show: true, message: "Steps saved" });
   };
 
   useEffect(() => {
@@ -78,7 +88,11 @@ export default function StepsPage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        {fetchError ? (
+          <p className="text-destructive text-sm">{fetchError}</p>
+        ) : (
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        )}
       </div>
     );
   }
@@ -106,7 +120,6 @@ export default function StepsPage() {
         <div className="space-y-4">
           {data.map((step, i) => (
             <div key={step.id} className="flex items-start gap-3 p-4 rounded-xl border border-white/[0.06] bg-background/50">
-              <GripVertical className="w-5 h-5 text-muted-foreground mt-3 shrink-0" />
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 flex-1">
                 <div>
                   <label className="block text-xs text-muted-foreground mb-1">Step</label>

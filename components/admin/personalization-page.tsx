@@ -8,12 +8,17 @@ import Toast from "@/components/admin/Toast";
 export default function PersonalizationPage() {
   const [data, setData] = useState<PersonalizationData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState({ show: false, message: "" });
 
   useEffect(() => {
     fetch("/api/personalization")
-      .then((r) => r.json())
-      .then(setData);
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load personalization data");
+        return r.json();
+      })
+      .then(setData)
+      .catch((e) => setError(e.message));
   }, []);
 
   const update = useCallback(
@@ -32,13 +37,19 @@ export default function PersonalizationPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/personalization", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    setSaving(false);
-    setToast({ show: true, message: "Personalization saved" });
+    try {
+      const res = await fetch("/api/personalization", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Personalization saved" });
+    } catch (e) {
+      setToast({ show: true, message: e instanceof Error ? e.message : "Save failed" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addFeature = () => {
@@ -57,6 +68,14 @@ export default function PersonalizationPage() {
     setData({ ...data, features: data.features.filter((_, i) => i !== index) });
   };
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-destructive">{error}</p>
+      </div>
+    );
+  }
+
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -67,7 +86,7 @@ export default function PersonalizationPage() {
 
   return (
     <div className="space-y-8 animate-fade-up">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Personalization</h1>
           <p className="text-muted-foreground mt-1">Manage personalization content and feature cards.</p>

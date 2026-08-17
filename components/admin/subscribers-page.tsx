@@ -14,46 +14,73 @@ export default function SubscribersPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast>({ show: false, message: "" });
   const [newEmail, setNewEmail] = useState("");
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/subscribers")
-      .then((r) => r.json())
-      .then((d) => setData(d));
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      })
+      .then((d) => setData(d))
+      .catch(() => setFetchError("Failed to load subscribers"));
   }, []);
 
   const addSubscriber = async () => {
     if (!newEmail.trim()) return;
-    const res = await fetch("/api/subscribers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: newEmail.trim() }),
-    });
-    const sub: Subscriber = await res.json();
-    setData((prev) => {
-      if (!prev) return prev;
-      return [...prev, sub];
-    });
-    setNewEmail("");
-    setToast({ show: true, message: "Subscriber added" });
+    try {
+      const res = await fetch("/api/subscribers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newEmail.trim() }),
+      });
+      if (!res.ok) throw new Error("Failed to add subscriber");
+      const sub: Subscriber = await res.json();
+      const updated = data ? [...data, sub] : [sub];
+      setData(updated);
+      setNewEmail("");
+      setToast({ show: true, message: "Subscriber added" });
+      await fetch("/api/subscribers", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+    } catch {
+      setToast({ show: true, message: "Failed to add subscriber" });
+    }
   };
 
-  const removeSubscriber = (id: string) => {
-    setData((prev) => {
-      if (!prev) return prev;
-      return prev.filter((s) => s.id !== id);
-    });
+  const removeSubscriber = async (id: string) => {
+    const updated = data ? data.filter((s) => s.id !== id) : [];
+    setData(updated);
+    try {
+      const res = await fetch("/api/subscribers", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Subscriber removed" });
+    } catch {
+      setToast({ show: true, message: "Failed to save after removal" });
+    }
   };
 
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/subscribers", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/subscribers", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Subscribers saved" });
+    } catch {
+      setToast({ show: true, message: "Failed to save subscribers" });
+    }
     setSaving(false);
-    setToast({ show: true, message: "Subscribers saved" });
   };
 
   useEffect(() => {
@@ -65,7 +92,11 @@ export default function SubscribersPage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        {fetchError ? (
+          <p className="text-destructive text-sm">{fetchError}</p>
+        ) : (
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        )}
       </div>
     );
   }

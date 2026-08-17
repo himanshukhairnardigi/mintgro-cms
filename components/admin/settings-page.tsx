@@ -14,11 +14,16 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [toast, setToast] = useState<Toast>({ show: false, message: "" });
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => setData(d));
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      })
+      .then((d) => setData(d))
+      .catch(() => setFetchError("Failed to load settings"));
   }, []);
 
   const update = (path: string, value: unknown) => {
@@ -40,23 +45,35 @@ export default function SettingsPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Settings saved" });
+    } catch {
+      setToast({ show: true, message: "Failed to save settings" });
+    }
     setSaving(false);
-    setToast({ show: true, message: "Settings saved" });
   };
 
   const reset = async () => {
     if (!confirm("Reset all data to defaults? This cannot be undone.")) return;
     setResetting(true);
-    await fetch("/api/settings", { method: "DELETE" });
-    const fresh = await fetch("/api/settings").then((r) => r.json());
-    setData(fresh);
+    try {
+      await fetch("/api/settings", { method: "DELETE" });
+      const fresh = await fetch("/api/settings").then((r) => {
+        if (!r.ok) throw new Error("Failed to reset");
+        return r.json();
+      });
+      setData(fresh);
+      setToast({ show: true, message: "Data reset to defaults" });
+    } catch {
+      setToast({ show: true, message: "Failed to reset data" });
+    }
     setResetting(false);
-    setToast({ show: true, message: "Data reset to defaults" });
   };
 
   useEffect(() => {
@@ -68,7 +85,11 @@ export default function SettingsPage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        {fetchError ? (
+          <p className="text-destructive text-sm">{fetchError}</p>
+        ) : (
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        )}
       </div>
     );
   }

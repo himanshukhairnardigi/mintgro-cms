@@ -46,10 +46,10 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard icon={Boxes} label="Sections" value={14} change="+2 this week" positive color="primary" />
+        <StatsCard icon={Boxes} label="Sections" value={Object.keys(data).length} color="primary" />
         <StatsCard icon={Building2} label="Industries" value={data.industries.length} color="blue" />
         <StatsCard icon={DollarSign} label="Pricing Tiers" value={data.pricing.tiers.length} color="purple" />
-        <StatsCard icon={Mail} label="Subscribers" value={data.subscribers.length} change="+1 today" positive color="amber" />
+        <StatsCard icon={Mail} label="Subscribers" value={data.subscribers.length} color="amber" />
       </div>
 
       <div>
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
             Recent Subscribers
           </h3>
           <div className="space-y-2">
-            {data.subscribers.map((sub) => (
+            {data.subscribers.slice(-5).reverse().map((sub) => (
               <div key={sub.id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-border">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">

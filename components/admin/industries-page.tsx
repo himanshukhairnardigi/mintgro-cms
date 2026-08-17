@@ -23,12 +23,17 @@ const ICON_OPTIONS = [
 export default function IndustriesPage() {
   const [data, setData] = useState<IndustryData[] | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState({ show: false, message: "" });
 
   useEffect(() => {
     fetch("/api/industries")
-      .then((r) => r.json())
-      .then(setData);
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load industries data");
+        return r.json();
+      })
+      .then(setData)
+      .catch((e) => setError(e.message));
   }, []);
 
   const update = useCallback(
@@ -44,13 +49,19 @@ export default function IndustriesPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/industries", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    setSaving(false);
-    setToast({ show: true, message: "Industries saved" });
+    try {
+      const res = await fetch("/api/industries", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Industries saved" });
+    } catch (e) {
+      setToast({ show: true, message: e instanceof Error ? e.message : "Save failed" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addIndustry = () => {
@@ -66,6 +77,14 @@ export default function IndustriesPage() {
     setData(data.filter((_, i) => i !== index));
   };
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-destructive">{error}</p>
+      </div>
+    );
+  }
+
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -76,7 +95,7 @@ export default function IndustriesPage() {
 
   return (
     <div className="space-y-8 animate-fade-up">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Industries</h1>
           <p className="text-muted-foreground mt-1">Manage industry cards shown on the site.</p>

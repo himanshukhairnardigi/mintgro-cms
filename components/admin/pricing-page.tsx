@@ -17,11 +17,16 @@ export default function PricingPage() {
   const [data, setData] = useState<PricingData | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast>({ show: false, message: "" });
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/pricing")
-      .then((r) => r.json())
-      .then((d) => setData(d));
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      })
+      .then((d) => setData(d))
+      .catch(() => setFetchError("Failed to load pricing data"));
   }, []);
 
   const update = (path: string, value: unknown) => {
@@ -90,13 +95,18 @@ export default function PricingPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/pricing", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/pricing", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Pricing saved" });
+    } catch {
+      setToast({ show: true, message: "Failed to save pricing" });
+    }
     setSaving(false);
-    setToast({ show: true, message: "Pricing saved" });
   };
 
   useEffect(() => {
@@ -108,7 +118,11 @@ export default function PricingPage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        {fetchError ? (
+          <p className="text-destructive text-sm">{fetchError}</p>
+        ) : (
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        )}
       </div>
     );
   }
@@ -183,15 +197,28 @@ export default function PricingPage() {
                 {tier.price === null ? (
                   <div className="input-modern w-full bg-muted/30 text-muted-foreground">Custom</div>
                 ) : (
-                  <input
-                    type="number"
-                    value={tier.price}
-                    onChange={(e) => {
-                      const val = e.target.value === "" ? null : Number(e.target.value);
-                      update(`tiers.${ti}.price`, val);
-                    }}
-                    className="input-modern w-full"
-                  />
+                  <>
+                    <input
+                      type="number"
+                      value={tier.price}
+                      onChange={(e) => {
+                        const val = e.target.value === "" ? null : Number(e.target.value);
+                        update(`tiers.${ti}.price`, val);
+                      }}
+                      className="input-modern w-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const copy = JSON.parse(JSON.stringify(data));
+                        copy.tiers[ti].price = null;
+                        setData(copy);
+                      }}
+                      className="text-[10px] text-muted-foreground hover:text-primary mt-1"
+                    >
+                      Set as Custom pricing
+                    </button>
+                  </>
                 )}
               </div>
               <div>

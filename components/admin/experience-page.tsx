@@ -8,12 +8,17 @@ import Toast from "@/components/admin/Toast";
 export default function ExperiencePage() {
   const [data, setData] = useState<ExperienceData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState({ show: false, message: "" });
 
   useEffect(() => {
     fetch("/api/experience")
-      .then((r) => r.json())
-      .then(setData);
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load experience data");
+        return r.json();
+      })
+      .then(setData)
+      .catch((e) => setError(e.message));
   }, []);
 
   const update = useCallback(
@@ -32,13 +37,19 @@ export default function ExperiencePage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/experience", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    setSaving(false);
-    setToast({ show: true, message: "Experience saved" });
+    try {
+      const res = await fetch("/api/experience", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "Experience saved" });
+    } catch (e) {
+      setToast({ show: true, message: e instanceof Error ? e.message : "Save failed" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addSidebarItem = () => {
@@ -71,6 +82,14 @@ export default function ExperiencePage() {
     setData({ ...data, devices: data.devices.filter((_, i) => i !== index) });
   };
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-destructive">{error}</p>
+      </div>
+    );
+  }
+
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -81,7 +100,7 @@ export default function ExperiencePage() {
 
   return (
     <div className="space-y-8 animate-fade-up">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Experience Section</h1>
           <p className="text-muted-foreground mt-1">Manage sidebar items, stats, and supported devices.</p>
@@ -136,7 +155,7 @@ export default function ExperiencePage() {
           </div>
           <div className="space-y-3">
             {data.sidebarItems.map((item, i) => (
-              <div key={i} className="flex items-center gap-3">
+              <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <span className="text-sm text-muted-foreground font-mono shrink-0 w-6">{i + 1}.</span>
                 <input
                   type="text"
@@ -149,7 +168,7 @@ export default function ExperiencePage() {
                   placeholder="Item label"
                   className="input-modern flex-1"
                 />
-                <button onClick={() => removeSidebarItem(i)} className="btn-ghost text-destructive p-2">
+                <button onClick={() => removeSidebarItem(i)} className="btn-ghost text-destructive p-2 self-end">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -167,7 +186,7 @@ export default function ExperiencePage() {
           </div>
           <div className="space-y-3">
             {data.stats.map((stat, i) => (
-              <div key={i} className="flex items-center gap-3">
+              <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <input
                   type="text"
                   value={stat.label}
@@ -180,9 +199,9 @@ export default function ExperiencePage() {
                   value={stat.value}
                   onChange={(e) => update(`stats.${i}.value`, e.target.value)}
                   placeholder="Value"
-                  className="input-modern w-28"
+                  className="input-modern sm:w-28"
                 />
-                <button onClick={() => removeStat(i)} className="btn-ghost text-destructive p-2">
+                <button onClick={() => removeStat(i)} className="btn-ghost text-destructive p-2 self-end">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -200,7 +219,7 @@ export default function ExperiencePage() {
           </div>
           <div className="space-y-3">
             {data.devices.map((device, i) => (
-              <div key={i} className="flex items-center gap-3">
+              <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <span className="text-sm text-muted-foreground font-mono shrink-0 w-6">{i + 1}.</span>
                 <input
                   type="text"
@@ -213,7 +232,7 @@ export default function ExperiencePage() {
                   placeholder="Device name"
                   className="input-modern flex-1"
                 />
-                <button onClick={() => removeDevice(i)} className="btn-ghost text-destructive p-2">
+                <button onClick={() => removeDevice(i)} className="btn-ghost text-destructive p-2 self-end">
                   <X className="w-4 h-4" />
                 </button>
               </div>

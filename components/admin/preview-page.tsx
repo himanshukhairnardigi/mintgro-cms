@@ -258,46 +258,12 @@ export default function PreviewPage() {
   const [data, setData] = useState<SiteData | null>(null);
   const [active, setActive] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const fetchAll = () => {
-    setLoading(true);
-    Promise.all([
-      fetch("/api/header").then((r) => r.json()),
-      fetch("/api/logobar").then((r) => r.json()),
-      fetch("/api/hero").then((r) => r.json()),
-      fetch("/api/challenges").then((r) => r.json()),
-      fetch("/api/crm").then((r) => r.json()),
-      fetch("/api/industries").then((r) => r.json()),
-      fetch("/api/personalization").then((r) => r.json()),
-      fetch("/api/experience").then((r) => r.json()),
-      fetch("/api/steps").then((r) => r.json()),
-      fetch("/api/pricing").then((r) => r.json()),
-      fetch("/api/faq").then((r) => r.json()),
-      fetch("/api/cta").then((r) => r.json()),
-    ]).then(
-      ([header, logoBar, hero, challenges, crm, industries, personalization, experience, steps, pricing, faq, ctaSection]) => {
-        setData({
-          header,
-          logoBar,
-          hero,
-          challenges,
-          crm,
-          industries,
-          personalization,
-          experience,
-          steps,
-          pricing,
-          faq,
-          ctaSection,
-          subscribers: [],
-          settings: { siteName: "", siteDescription: "", contactEmail: "" },
-        });
-        setLoading(false);
-      }
-    );
-  };
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard data-fetching pattern
+    setLoading(true);
+    setError(null);
     Promise.all([
       fetch("/api/header").then((r) => r.json()),
       fetch("/api/logobar").then((r) => r.json()),
@@ -320,7 +286,10 @@ export default function PreviewPage() {
         });
         setLoading(false);
       }
-    );
+    ).catch(() => {
+      setError("Failed to load preview");
+      setLoading(false);
+    });
   }, []);
 
   const displaySections = active ? sections.filter((s) => s.id === active) : sections;
@@ -333,12 +302,12 @@ export default function PreviewPage() {
           <p className="text-muted-foreground mt-1">Preview all sections of your site</p>
         </div>
         <div className="flex items-center gap-3 self-start">
-          <button onClick={fetchAll} disabled={loading} className="btn-secondary flex items-center gap-2">
+          <button onClick={() => window.location.reload()} disabled={loading} className="btn-secondary flex items-center gap-2">
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
           <a
-            href="http://localhost:3001"
+            href="/"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary flex items-center gap-2"
@@ -374,6 +343,10 @@ export default function PreviewPage() {
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center h-64">
+          <p className="text-destructive text-sm">{error}</p>
         </div>
       ) : !data ? (
         <div className="flex items-center justify-center h-64">

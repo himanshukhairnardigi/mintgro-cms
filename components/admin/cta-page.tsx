@@ -13,11 +13,16 @@ export default function CTAPage() {
   const [data, setData] = useState<CTASectionData | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast>({ show: false, message: "" });
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/cta")
-      .then((r) => r.json())
-      .then((d) => setData(d));
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      })
+      .then((d) => setData(d))
+      .catch(() => setFetchError("Failed to load CTA data"));
   }, []);
 
   const update = (path: string, value: unknown) => {
@@ -39,13 +44,18 @@ export default function CTAPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/cta", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/cta", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "CTA saved" });
+    } catch {
+      setToast({ show: true, message: "Failed to save CTA" });
+    }
     setSaving(false);
-    setToast({ show: true, message: "CTA saved" });
   };
 
   useEffect(() => {
@@ -57,7 +67,11 @@ export default function CTAPage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        {fetchError ? (
+          <p className="text-destructive text-sm">{fetchError}</p>
+        ) : (
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        )}
       </div>
     );
   }

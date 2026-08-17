@@ -8,12 +8,17 @@ import Toast from "@/components/admin/Toast";
 export default function CRMPage() {
   const [data, setData] = useState<CRMFeatureData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState({ show: false, message: "" });
 
   useEffect(() => {
     fetch("/api/crm")
-      .then((r) => r.json())
-      .then(setData);
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load CRM data");
+        return r.json();
+      })
+      .then(setData)
+      .catch((e) => setError(e.message));
   }, []);
 
   const update = useCallback(
@@ -32,13 +37,19 @@ export default function CRMPage() {
   const save = async () => {
     if (!data) return;
     setSaving(true);
-    await fetch("/api/crm", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    setSaving(false);
-    setToast({ show: true, message: "CRM section saved" });
+    try {
+      const res = await fetch("/api/crm", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      setToast({ show: true, message: "CRM section saved" });
+    } catch (e) {
+      setToast({ show: true, message: e instanceof Error ? e.message : "Save failed" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addFeatureItem = () => {
@@ -61,6 +72,14 @@ export default function CRMPage() {
     setData({ ...data, dashboardStats: data.dashboardStats.filter((_, i) => i !== index) });
   };
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-destructive">{error}</p>
+      </div>
+    );
+  }
+
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -71,7 +90,7 @@ export default function CRMPage() {
 
   return (
     <div className="space-y-8 animate-fade-up">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">CRM Features</h1>
           <p className="text-muted-foreground mt-1">Manage CRM section content, features, and dashboard stats.</p>
@@ -158,13 +177,13 @@ export default function CRMPage() {
         </div>
         <div className="space-y-3">
           {data.featureList.map((item, i) => (
-            <div key={i} className="flex items-center gap-3">
+            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3">
               <input
                 type="text"
                 value={item.icon}
                 onChange={(e) => update(`featureList.${i}.icon`, e.target.value)}
                 placeholder="Icon name"
-                className="input-modern w-40"
+                className="input-modern sm:w-40"
               />
               <input
                 type="text"
@@ -173,7 +192,7 @@ export default function CRMPage() {
                 placeholder="Label"
                 className="input-modern flex-1"
               />
-              <button onClick={() => removeFeatureItem(i)} className="btn-ghost text-destructive p-2">
+              <button onClick={() => removeFeatureItem(i)} className="btn-ghost text-destructive p-2 self-end">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -191,7 +210,7 @@ export default function CRMPage() {
         </div>
         <div className="space-y-3">
           {data.dashboardStats.map((stat, i) => (
-            <div key={i} className="flex items-center gap-3">
+            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3">
               <input
                 type="text"
                 value={stat.label}
@@ -204,9 +223,9 @@ export default function CRMPage() {
                 value={stat.value}
                 onChange={(e) => update(`dashboardStats.${i}.value`, e.target.value)}
                 placeholder="Value"
-                className="input-modern w-40"
+                className="input-modern sm:w-40"
               />
-              <button onClick={() => removeStat(i)} className="btn-ghost text-destructive p-2">
+              <button onClick={() => removeStat(i)} className="btn-ghost text-destructive p-2 self-end">
                 <X className="w-4 h-4" />
               </button>
             </div>
