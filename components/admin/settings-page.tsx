@@ -1,27 +1,50 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, RotateCcw } from "lucide-react";
-import Toast from "@/components/admin/Toast";
 import type { SiteSettings } from "@/lib/types";
+import { Save, Loader2, RotateCcw } from "lucide-react";
+
+interface Toast {
+  show: boolean;
+  message: string;
+}
 
 export default function SettingsPage() {
   const [data, setData] = useState<SiteSettings | null>(null);
-  const [toast, setToast] = useState({ show: false, message: "" });
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [toast, setToast] = useState<Toast>({ show: false, message: "" });
 
   useEffect(() => {
-    fetch("/api/settings").then((r) => r.json()).then(setData);
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => setData(d));
   }, []);
 
-  if (!data) return <div className="p-8 text-muted-foreground text-xs animate-pulse">Loading...</div>;
-
-  const update = (field: string, value: string) => setData({ ...data, [field]: value });
+  const update = (path: string, value: unknown) => {
+    setData((prev) => {
+      if (!prev) return prev;
+      const keys = path.split(".");
+      const next = JSON.parse(JSON.stringify(prev)) as SiteSettings;
+      let obj: Record<string, unknown> = next as unknown as Record<string, unknown>;
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = isNaN(Number(keys[i])) ? keys[i] : Number(keys[i]);
+        obj = (obj[key] as Record<string, unknown>) ?? {};
+      }
+      const lastKey = isNaN(Number(keys[keys.length - 1])) ? keys[keys.length - 1] : Number(keys[keys.length - 1]);
+      obj[lastKey] = value;
+      return next;
+    });
+  };
 
   const save = async () => {
+    if (!data) return;
     setSaving(true);
-    await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    await fetch("/api/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     setSaving(false);
     setToast({ show: true, message: "Settings saved" });
   };
@@ -36,36 +59,86 @@ export default function SettingsPage() {
     setToast({ show: true, message: "Data reset to defaults" });
   };
 
+  useEffect(() => {
+    if (!toast.show) return;
+    const t = setTimeout(() => setToast({ show: false, message: "" }), 2500);
+    return () => clearTimeout(t);
+  }, [toast.show]);
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 animate-fade-up">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold tracking-tight">Settings</h2>
-          <p className="text-xs text-muted-foreground mt-1">Global site configuration</p>
+    <div className="space-y-6">
+      {toast.show && (
+        <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
+          {toast.message}
         </div>
-        <div className="flex gap-2">
-          <button onClick={reset} disabled={resetting} className="btn-danger"><RotateCcw className="w-4 h-4" /> {resetting ? "Resetting..." : "Reset All Data"}</button>
-          <button onClick={save} disabled={saving} className="btn-primary"><Save className="w-4 h-4" /> {saving ? "Saving..." : "Save"}</button>
+      )}
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+          <p className="text-muted-foreground mt-1">Manage site settings and data</p>
+        </div>
+        <div className="flex items-center gap-3 self-start">
+          <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Save
+          </button>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-5">
-        <h3 className="text-sm font-semibold">General</h3>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Site Name</label>
-          <input className="input-modern" value={data.siteName} onChange={(e) => update("siteName", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Site Description</label>
-          <input className="input-modern" value={data.siteDescription} onChange={(e) => update("siteDescription", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Contact Email</label>
-          <input className="input-modern" type="email" value={data.contactEmail} onChange={(e) => update("contactEmail", e.target.value)} />
+      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">General</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">Site Name</label>
+            <input
+              value={data.siteName}
+              onChange={(e) => update("siteName", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">Site Description</label>
+            <input
+              value={data.siteDescription}
+              onChange={(e) => update("siteDescription", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">Contact Email</label>
+            <input
+              type="email"
+              value={data.contactEmail}
+              onChange={(e) => update("contactEmail", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
         </div>
       </div>
 
-      <Toast message={toast.message} show={toast.show} onClose={() => setToast({ show: false, message: "" })} />
+      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Danger Zone</h2>
+        <p className="text-sm text-muted-foreground">
+          Reset all data to factory defaults. This action is irreversible.
+        </p>
+        <button
+          onClick={reset}
+          disabled={resetting}
+          className="btn-danger flex items-center gap-2"
+        >
+          {resetting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
+          Reset All Data
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,86 +1,152 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save } from "lucide-react";
-import Toast from "@/components/admin/Toast";
 import type { CTASectionData } from "@/lib/types";
+import { Save, Loader2 } from "lucide-react";
+
+interface Toast {
+  show: boolean;
+  message: string;
+}
 
 export default function CTAPage() {
   const [data, setData] = useState<CTASectionData | null>(null);
-  const [toast, setToast] = useState({ show: false, message: "" });
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<Toast>({ show: false, message: "" });
 
   useEffect(() => {
-    fetch("/api/cta").then((r) => r.json()).then(setData);
+    fetch("/api/cta")
+      .then((r) => r.json())
+      .then((d) => setData(d));
   }, []);
 
-  if (!data) return <div className="p-8 text-muted-foreground text-xs animate-pulse">Loading...</div>;
-
   const update = (path: string, value: unknown) => {
-    const copy = JSON.parse(JSON.stringify(data));
-    const keys = path.split(".");
-    let obj = copy;
-    for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
-    obj[keys[keys.length - 1]] = value;
-    setData(copy);
+    setData((prev) => {
+      if (!prev) return prev;
+      const keys = path.split(".");
+      const next = JSON.parse(JSON.stringify(prev)) as CTASectionData;
+      let obj: Record<string, unknown> = next as unknown as Record<string, unknown>;
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = isNaN(Number(keys[i])) ? keys[i] : Number(keys[i]);
+        obj = (obj[key] as Record<string, unknown>) ?? {};
+      }
+      const lastKey = isNaN(Number(keys[keys.length - 1])) ? keys[keys.length - 1] : Number(keys[keys.length - 1]);
+      obj[lastKey] = value;
+      return next;
+    });
   };
 
   const save = async () => {
+    if (!data) return;
     setSaving(true);
-    await fetch("/api/cta", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    await fetch("/api/cta", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     setSaving(false);
-    setToast({ show: true, message: "CTA section saved" });
+    setToast({ show: true, message: "CTA saved" });
   };
 
+  useEffect(() => {
+    if (!toast.show) return;
+    const t = setTimeout(() => setToast({ show: false, message: "" }), 2500);
+    return () => clearTimeout(t);
+  }, [toast.show]);
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 animate-fade-up">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold tracking-tight">CTA / Contact Section</h2>
-          <p className="text-xs text-muted-foreground mt-1">Edit the final call-to-action section</p>
+    <div className="space-y-6">
+      {toast.show && (
+        <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
+          {toast.message}
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary"><Save className="w-4 h-4" /> {saving ? "Saving..." : "Save"}</button>
+      )}
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">CTA Section</h1>
+          <p className="text-muted-foreground mt-1">Manage the call-to-action section</p>
+        </div>
+        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2 self-start">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          Save
+        </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-5">
-        <h3 className="text-sm font-semibold">Content</h3>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Eyebrow</label>
-          <input className="input-modern" value={data.eyebrow} onChange={(e) => update("eyebrow", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Title</label>
-          <input className="input-modern" value={data.title} onChange={(e) => update("title", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Description</label>
-          <textarea className="input-modern" rows={2} value={data.description} onChange={(e) => update("description", e.target.value)} />
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-5">
-        <h3 className="text-sm font-semibold">Call-to-Actions</h3>
-        <div className="grid sm:grid-cols-2 gap-4">
+      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Content</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Primary Label</label>
-            <input className="input-modern" value={data.ctaPrimary.label} onChange={(e) => update("ctaPrimary.label", e.target.value)} />
+            <label className="block text-xs text-muted-foreground mb-1">Eyebrow</label>
+            <input value={data.eyebrow} onChange={(e) => update("eyebrow", e.target.value)} className="input-modern w-full" />
           </div>
           <div>
-            <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Primary Href</label>
-            <input className="input-modern" value={data.ctaPrimary.href} onChange={(e) => update("ctaPrimary.href", e.target.value)} />
+            <label className="block text-xs text-muted-foreground mb-1">Title</label>
+            <input value={data.title} onChange={(e) => update("title", e.target.value)} className="input-modern w-full" />
           </div>
-          <div>
-            <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Secondary Label</label>
-            <input className="input-modern" value={data.ctaSecondary.label} onChange={(e) => update("ctaSecondary.label", e.target.value)} />
-          </div>
-          <div>
-            <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Secondary Href</label>
-            <input className="input-modern" value={data.ctaSecondary.href} onChange={(e) => update("ctaSecondary.href", e.target.value)} />
+          <div className="sm:col-span-3">
+            <label className="block text-xs text-muted-foreground mb-1">Description</label>
+            <textarea
+              value={data.description}
+              onChange={(e) => update("description", e.target.value)}
+              className="input-modern w-full min-h-[80px] resize-y"
+              rows={3}
+            />
           </div>
         </div>
       </div>
 
-      <Toast message={toast.message} show={toast.show} onClose={() => setToast({ show: false, message: "" })} />
+      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">CTAs</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Primary</h3>
+            <div>
+              <label className="block text-xs text-muted-foreground mb-1">Label</label>
+              <input
+                value={data.ctaPrimary.label}
+                onChange={(e) => update("ctaPrimary.label", e.target.value)}
+                className="input-modern w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-muted-foreground mb-1">Href</label>
+              <input
+                value={data.ctaPrimary.href}
+                onChange={(e) => update("ctaPrimary.href", e.target.value)}
+                className="input-modern w-full"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Secondary</h3>
+            <div>
+              <label className="block text-xs text-muted-foreground mb-1">Label</label>
+              <input
+                value={data.ctaSecondary.label}
+                onChange={(e) => update("ctaSecondary.label", e.target.value)}
+                className="input-modern w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-muted-foreground mb-1">Href</label>
+              <input
+                value={data.ctaSecondary.href}
+                onChange={(e) => update("ctaSecondary.href", e.target.value)}
+                className="input-modern w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

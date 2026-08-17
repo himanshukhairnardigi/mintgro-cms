@@ -129,3 +129,10 @@ body { background-color: #0a0a0a; color: #fafafa; font-family: "Inter", sans-ser
 .card-hover {
   @apply hover:border-primary/20 hover:shadow-[0_0_30px_rgba(16,185,129,0.04)] transition-all duration-300;
 }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+.animate-shake { animation: shake 0.4s ease-in-out; }

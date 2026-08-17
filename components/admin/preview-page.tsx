@@ -1,133 +1,87 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, ExternalLink, RefreshCw } from "lucide-react";
-import type { SiteData, HeaderData, LogoBarData, HeroData, ChallengesData, CRMFeatureData, IndustryData, PersonalizationData, ExperienceData, StepData, PricingData, FAQData, CTASectionData } from "@/lib/types";
+import type {
+  SiteData,
+  HeaderData,
+  LogoBarData,
+  HeroData,
+  ChallengesData,
+  CRMFeatureData,
+  IndustryData,
+  PersonalizationData,
+  ExperienceData,
+  StepData,
+  PricingData,
+  FAQData,
+  CTASectionData,
+} from "@/lib/types";
+import { RefreshCw, Loader2, ExternalLink } from "lucide-react";
 
-export default function PreviewPage() {
-  const [data, setData] = useState<SiteData | null>(null);
-  const [active, setActive] = useState<string | null>(null);
+const sections: { id: keyof SiteData; label: string }[] = [
+  { id: "header", label: "Header" },
+  { id: "logoBar", label: "Logo Bar" },
+  { id: "hero", label: "Hero" },
+  { id: "challenges", label: "Challenges" },
+  { id: "crm", label: "CRM" },
+  { id: "industries", label: "Industries" },
+  { id: "personalization", label: "Personalization" },
+  { id: "experience", label: "Experience" },
+  { id: "steps", label: "Steps" },
+  { id: "pricing", label: "Pricing" },
+  { id: "faq", label: "FAQ" },
+  { id: "ctaSection", label: "CTA" },
+];
 
-  const load = () => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then(() => {
-        return Promise.all([
-          fetch("/api/header").then((r) => r.json()),
-          fetch("/api/logobar").then((r) => r.json()),
-          fetch("/api/hero").then((r) => r.json()),
-          fetch("/api/challenges").then((r) => r.json()),
-          fetch("/api/crm").then((r) => r.json()),
-          fetch("/api/industries").then((r) => r.json()),
-          fetch("/api/personalization").then((r) => r.json()),
-          fetch("/api/experience").then((r) => r.json()),
-          fetch("/api/steps").then((r) => r.json()),
-          fetch("/api/pricing").then((r) => r.json()),
-          fetch("/api/faq").then((r) => r.json()),
-          fetch("/api/cta").then((r) => r.json()),
-        ]).then(([header, logoBar, hero, challenges, crm, industries, personalization, experience, steps, pricing, faq, ctaSection]) => ({
-          header, logoBar, hero, challenges, crm, industries, personalization, experience, steps, pricing, faq, ctaSection,
-        }));
-      })
-      .then((d) => setData(d as SiteData));
-  };
-
-  useEffect(() => { load(); }, []);
-
-  if (!data) return <div className="p-8 text-muted-foreground text-xs animate-pulse">Loading preview...</div>;
-
-  const sections: { id: keyof SiteData; label: string }[] = [
-    { id: "header", label: "Header" },
-    { id: "logoBar", label: "Logo Bar" },
-    { id: "hero", label: "Hero" },
-    { id: "challenges", label: "Challenges" },
-    { id: "crm", label: "CRM" },
-    { id: "industries", label: "Industries" },
-    { id: "personalization", label: "Personalization" },
-    { id: "experience", label: "Experience" },
-    { id: "steps", label: "Steps" },
-    { id: "pricing", label: "Pricing" },
-    { id: "faq", label: "FAQ" },
-    { id: "ctaSection", label: "CTA" },
-  ];
-
-  return (
-    <div className="space-y-6 animate-fade-up">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold tracking-tight">Live Preview</h2>
-          <p className="text-xs text-muted-foreground mt-1">Preview all sections with current CMS data</p>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={load} className="btn-secondary"><RefreshCw className="w-4 h-4" /> Refresh</button>
-          <a href="http://localhost:3001" target="_blank" rel="noopener noreferrer" className="btn-primary"><ExternalLink className="w-4 h-4" /> Open Live Site</a>
-        </div>
-      </div>
-
-      {/* Section tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        <button onClick={() => setActive(null)} className={`text-[10px] font-medium px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${!active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"}`}>
-          All Sections
-        </button>
-        {sections.map((s) => (
-          <button key={s.id} onClick={() => setActive(s.id)} className={`text-[10px] font-medium px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${active === s.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"}`}>
-            {s.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Preview */}
-      <div className="rounded-2xl border border-white/[0.06] bg-card overflow-hidden">
-        <div className="bg-[#111] px-4 py-2.5 border-b border-white/[0.04] flex items-center gap-2">
-          <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground font-mono">mintgro.com</span>
-        </div>
-
-        <div className="p-6 space-y-0">
-          {(active ? sections.filter((s) => s.id === active) : sections).map((s) => (
-            <PreviewSection key={s.id} id={s.id} label={s.label} data={data[s.id]} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PreviewSection({ id, label, data }: { id: keyof SiteData; label: string; data: SiteData[keyof SiteData] }) {
-  if (!data) return null;
-
+function PreviewSection({ id, label, data }: { id: string; label: string; data: SiteData[keyof SiteData] }) {
   const renderContent = () => {
     switch (id) {
       case "header": {
         const d = data as HeaderData;
         return (
-          <div className="space-y-2">
-            <div className="font-semibold text-sm">{d.logo?.text}</div>
-            <div className="flex gap-3 text-[10px] text-muted-foreground">
-              {d.navLinks?.map((l, i) => <span key={i}>{l.label}</span>)}
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-bold text-foreground">{d.logo?.text}</span>
+              <span className="text-xs text-muted-foreground ml-2">{d.logo?.tagline}</span>
             </div>
-            <div className="text-[10px] text-primary">{d.ctaButton?.label}</div>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              {d.navLinks?.map((link, i) => (
+                <span key={i}>{link.label}</span>
+              ))}
+              <span className="bg-primary/10 text-primary px-2 py-1 rounded-lg">{d.ctaButton?.label}</span>
+            </div>
           </div>
         );
       }
       case "logoBar": {
         const d = data as LogoBarData;
         return (
-          <div className="space-y-2">
-            <div className="text-[10px] text-muted-foreground">{d.heading}</div>
-            <div className="flex gap-4 text-[10px]">{d.logos?.map((l, i) => <span key={i} className="text-muted-foreground/50">{l.name}</span>)}</div>
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground mb-1">{d.heading}</p>
+            <div className="flex items-center justify-center gap-4 text-xs text-foreground/60">
+              {d.logos?.map((logo, i) => (
+                <span key={i} className="px-2 py-1 rounded bg-white/[0.04]">{logo.name}</span>
+              ))}
+            </div>
           </div>
         );
       }
       case "hero": {
         const d = data as HeroData;
         return (
-          <div className="space-y-2">
-            <div className="text-[10px] text-primary font-medium">{d.eyebrow}</div>
-            <div className="text-lg font-bold">{d.title}</div>
-            <div className="text-xs text-muted-foreground">{d.description}</div>
-            <div className="flex gap-2 text-[10px]"><span className="text-primary">{d.ctaPrimary?.label}</span><span className="text-muted-foreground">{d.ctaSecondary?.label}</span></div>
-            <div className="flex gap-2 text-[10px] text-muted-foreground/50">{d.trustBadges?.map((b, i) => <span key={i}>✓ {b}</span>)}</div>
+          <div className="space-y-2 text-center">
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{d.eyebrow}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <p className="text-xs text-muted-foreground max-w-lg mx-auto">{d.description}</p>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <span className="bg-primary text-primary-foreground text-xs px-3 py-1.5 rounded-lg">{d.ctaPrimary?.label}</span>
+              <span className="border border-white/[0.1] text-xs px-3 py-1.5 rounded-lg">{d.ctaSecondary?.label}</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              {d.trustBadges?.map((badge, i) => (
+                <span key={i} className="text-[10px] text-muted-foreground">{badge}</span>
+              ))}
+            </div>
           </div>
         );
       }
@@ -135,11 +89,25 @@ function PreviewSection({ id, label, data }: { id: keyof SiteData; label: string
         const d = data as ChallengesData;
         return (
           <div className="space-y-2">
-            <div className="text-[10px] text-primary font-medium">{d.eyebrow}</div>
-            <div className="text-sm font-bold">{d.title}</div>
-            <div className="grid grid-cols-2 gap-4 text-[10px]">
-              <div><div className="text-red-400 font-medium mb-1">Problems</div>{d.problems?.map((p, i) => <div key={i} className="text-muted-foreground">• {p}</div>)}</div>
-              <div><div className="text-primary font-medium mb-1">Solutions</div>{d.solutions?.map((s, i) => <div key={i} className="text-muted-foreground">✓ {s}</div>)}</div>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{d.eyebrow}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <div className="grid grid-cols-2 gap-4 mt-2">
+              <div>
+                <p className="text-xs font-medium text-red-400 mb-1">Problems</p>
+                {d.problems?.map((p, i) => (
+                  <p key={i} className="text-xs text-muted-foreground flex items-center gap-1">
+                    <span className="w-1 h-1 rounded-full bg-red-400 shrink-0" /> {p}
+                  </p>
+                ))}
+              </div>
+              <div>
+                <p className="text-xs font-medium text-emerald-400 mb-1">Solutions</p>
+                {d.solutions?.map((s, i) => (
+                  <p key={i} className="text-xs text-muted-foreground flex items-center gap-1">
+                    <span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" /> {s}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         );
@@ -148,23 +116,25 @@ function PreviewSection({ id, label, data }: { id: keyof SiteData; label: string
         const d = data as CRMFeatureData;
         return (
           <div className="space-y-2">
-            <div className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full inline-block">{d.badge}</div>
-            <div className="text-sm font-bold">{d.title}</div>
-            <div className="text-xs text-muted-foreground">{d.description}</div>
-            <div className="text-[10px] text-primary font-medium">{d.categoryLabel}</div>
-            <div className="text-xs">{d.featureTitle}</div>
-            <div className="flex gap-3 text-[10px] text-muted-foreground">{d.featureList?.map((f, i) => <span key={i}>• {f.label}</span>)}</div>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{d.badge}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <p className="text-xs text-muted-foreground">{d.description}</p>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {d.featureList?.map((f, i) => (
+                <span key={i} className="text-xs bg-white/[0.04] px-2 py-1 rounded-lg">{f.icon} {f.label}</span>
+              ))}
+            </div>
           </div>
         );
       }
       case "industries": {
         const d = data as IndustryData[];
         return (
-          <div className="flex flex-wrap gap-3">
-            {d.map((ind) => (
-              <div key={ind.id} className="text-[10px] px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                <span className="font-medium">{ind.name}</span>
-              </div>
+          <div className="flex flex-wrap gap-2">
+            {d?.map((ind) => (
+              <span key={ind.id} className="text-xs bg-white/[0.04] px-3 py-1.5 rounded-lg border border-white/[0.06]">
+                {ind.icon} {ind.name}
+              </span>
             ))}
           </div>
         );
@@ -173,10 +143,13 @@ function PreviewSection({ id, label, data }: { id: keyof SiteData; label: string
         const d = data as PersonalizationData;
         return (
           <div className="space-y-2">
-            <div className="text-[10px] text-primary font-medium">{d.categoryLabel}</div>
-            <div className="text-sm font-bold">{d.title}</div>
-            <div className="text-xs text-muted-foreground">{d.description}</div>
-            <div className="grid grid-cols-2 gap-2">{d.features?.map((f) => <div key={f.id} className="text-[10px] text-muted-foreground">• {f.title}</div>)}</div>
+            <span className="text-xs text-primary">{d.categoryLabel}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {d.features?.map((f) => (
+                <span key={f.id} className="text-xs bg-white/[0.04] px-2 py-1 rounded-lg">{f.icon} {f.title}</span>
+              ))}
+            </div>
           </div>
         );
       }
@@ -184,38 +157,57 @@ function PreviewSection({ id, label, data }: { id: keyof SiteData; label: string
         const d = data as ExperienceData;
         return (
           <div className="space-y-2">
-            <div className="text-[10px] text-primary font-medium">{d.eyebrow}</div>
-            <div className="text-sm font-bold">{d.title}</div>
-            <div className="text-xs text-muted-foreground">{d.description}</div>
-            <div className="flex gap-4 text-[10px] text-muted-foreground">{d.stats?.map((s, i) => <span key={i}>{s.label}: <strong className="text-foreground">{s.value}</strong></span>)}</div>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{d.eyebrow}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <div className="flex gap-4 mt-1">
+              {d.stats?.map((s, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-sm font-bold text-foreground">{s.value}</p>
+                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         );
       }
       case "steps": {
         const d = data as StepData[];
         return (
-          <div className="flex gap-4">{d.map((step) => (
-            <div key={step.id} className="flex-1 text-center">
-              <div className="text-[10px] text-primary font-mono">{step.step}</div>
-              <div className="text-xs font-medium mt-1">{step.title}</div>
-              <div className="text-[10px] text-muted-foreground mt-0.5">{step.desc}</div>
-            </div>
-          ))}</div>
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {d?.map((step) => (
+              <div key={step.id} className="flex items-center gap-3 shrink-0">
+                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                  {step.step}
+                </span>
+                <span className="text-xs text-foreground">{step.title}</span>
+              </div>
+            ))}
+          </div>
         );
       }
       case "pricing": {
         const d = data as PricingData;
         return (
           <div className="space-y-2">
-            <div className="text-[10px] text-primary font-medium">{d.eyebrow}</div>
-            <div className="text-sm font-bold">{d.title}</div>
-            <div className="flex gap-3">{d.tiers?.map((t) => (
-              <div key={t.id} className={`flex-1 text-center p-3 rounded-xl border text-[10px] ${t.popular ? "border-primary/30 bg-primary/5" : "border-white/[0.06]"}`}>
-                <div className="font-medium">{t.name}</div>
-                <div className="text-lg font-bold mt-1">{t.price !== null ? `$${t.price}` : "Custom"}</div>
-                <div className="text-muted-foreground">{t.priceLabel}</div>
-              </div>
-            ))}</div>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{d.eyebrow}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <div className="grid grid-cols-3 gap-3 mt-2">
+              {d.tiers?.map((tier) => (
+                <div
+                  key={tier.id}
+                  className={`p-3 rounded-xl border text-xs space-y-1 ${
+                    tier.popular ? "border-primary/30 bg-primary/5" : "border-white/[0.06] bg-white/[0.02]"
+                  }`}
+                >
+                  <p className="font-medium text-foreground">{tier.name}</p>
+                  <p className="text-lg font-bold text-foreground">
+                    {tier.price === null ? "Custom" : `$${tier.price}`}
+                    {tier.price !== null && <span className="text-[10px] text-muted-foreground font-normal">{tier.priceLabel}</span>}
+                  </p>
+                  <p className="text-muted-foreground text-[10px]">{tier.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         );
       }
@@ -223,34 +215,177 @@ function PreviewSection({ id, label, data }: { id: keyof SiteData; label: string
         const d = data as FAQData;
         return (
           <div className="space-y-2">
-            <div className="text-[10px] text-primary font-medium">{d.eyebrow}</div>
-            <div className="text-sm font-bold">{d.title}</div>
-            <div className="space-y-1">{d.items?.map((item) => (
-              <div key={item.id} className="text-[10px] text-muted-foreground">Q: {item.question}</div>
-            ))}</div>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{d.eyebrow}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <div className="space-y-1 mt-1">
+              {d.items?.map((item) => (
+                <p key={item.id} className="text-xs text-muted-foreground bg-white/[0.02] rounded-lg px-3 py-2">
+                  {item.question}
+                </p>
+              ))}
+            </div>
           </div>
         );
       }
       case "ctaSection": {
         const d = data as CTASectionData;
         return (
-          <div className="space-y-2">
-            <div className="text-[10px] text-primary font-medium">{d.eyebrow}</div>
-            <div className="text-sm font-bold">{d.title}</div>
-            <div className="text-xs text-muted-foreground">{d.description}</div>
-            <div className="flex gap-2 text-[10px]"><span className="text-primary">{d.ctaPrimary?.label}</span><span className="text-muted-foreground">{d.ctaSecondary?.label}</span></div>
+          <div className="space-y-2 text-center">
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{d.eyebrow}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">{d.description}</p>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <span className="bg-primary text-primary-foreground text-xs px-3 py-1.5 rounded-lg">{d.ctaPrimary?.label}</span>
+              <span className="border border-white/[0.1] text-xs px-3 py-1.5 rounded-lg">{d.ctaSecondary?.label}</span>
+            </div>
           </div>
         );
       }
       default:
-        return <div className="text-[10px] text-muted-foreground">No preview available</div>;
+        return <p className="text-xs text-muted-foreground">No preview available</p>;
     }
   };
 
   return (
-    <div className="py-5 border-b border-white/[0.04] last:border-0">
-      <div className="text-[9px] text-muted-foreground/50 uppercase tracking-widest mb-2">{label}</div>
+    <div className="rounded-2xl border border-white/[0.06] bg-card p-6">
+      <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">{label}</p>
       {renderContent()}
+    </div>
+  );
+}
+
+export default function PreviewPage() {
+  const [data, setData] = useState<SiteData | null>(null);
+  const [active, setActive] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = () => {
+    setLoading(true);
+    Promise.all([
+      fetch("/api/header").then((r) => r.json()),
+      fetch("/api/logobar").then((r) => r.json()),
+      fetch("/api/hero").then((r) => r.json()),
+      fetch("/api/challenges").then((r) => r.json()),
+      fetch("/api/crm").then((r) => r.json()),
+      fetch("/api/industries").then((r) => r.json()),
+      fetch("/api/personalization").then((r) => r.json()),
+      fetch("/api/experience").then((r) => r.json()),
+      fetch("/api/steps").then((r) => r.json()),
+      fetch("/api/pricing").then((r) => r.json()),
+      fetch("/api/faq").then((r) => r.json()),
+      fetch("/api/cta").then((r) => r.json()),
+    ]).then(
+      ([header, logoBar, hero, challenges, crm, industries, personalization, experience, steps, pricing, faq, ctaSection]) => {
+        setData({
+          header,
+          logoBar,
+          hero,
+          challenges,
+          crm,
+          industries,
+          personalization,
+          experience,
+          steps,
+          pricing,
+          faq,
+          ctaSection,
+          subscribers: [],
+          settings: { siteName: "", siteDescription: "", contactEmail: "" },
+        });
+        setLoading(false);
+      }
+    );
+  };
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/header").then((r) => r.json()),
+      fetch("/api/logobar").then((r) => r.json()),
+      fetch("/api/hero").then((r) => r.json()),
+      fetch("/api/challenges").then((r) => r.json()),
+      fetch("/api/crm").then((r) => r.json()),
+      fetch("/api/industries").then((r) => r.json()),
+      fetch("/api/personalization").then((r) => r.json()),
+      fetch("/api/experience").then((r) => r.json()),
+      fetch("/api/steps").then((r) => r.json()),
+      fetch("/api/pricing").then((r) => r.json()),
+      fetch("/api/faq").then((r) => r.json()),
+      fetch("/api/cta").then((r) => r.json()),
+    ]).then(
+      ([header, logoBar, hero, challenges, crm, industries, personalization, experience, steps, pricing, faq, ctaSection]) => {
+        setData({
+          header, logoBar, hero, challenges, crm, industries, personalization, experience, steps, pricing, faq, ctaSection,
+          subscribers: [],
+          settings: { siteName: "", siteDescription: "", contactEmail: "" },
+        });
+        setLoading(false);
+      }
+    );
+  }, []);
+
+  const displaySections = active ? sections.filter((s) => s.id === active) : sections;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Site Preview</h1>
+          <p className="text-muted-foreground mt-1">Preview all sections of your site</p>
+        </div>
+        <div className="flex items-center gap-3 self-start">
+          <button onClick={fetchAll} disabled={loading} className="btn-secondary flex items-center gap-2">
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+          <a
+            href="http://localhost:3001"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary flex items-center gap-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Open Live Site
+          </a>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        <button
+          onClick={() => setActive(null)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+            !active ? "bg-primary text-primary-foreground" : "bg-white/[0.04] text-muted-foreground hover:bg-white/[0.08]"
+          }`}
+        >
+          All Sections
+        </button>
+        {sections.map((s) => (
+          <button
+            key={s.id}
+            onClick={() => setActive(s.id)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+              active === s.id ? "bg-primary text-primary-foreground" : "bg-white/[0.04] text-muted-foreground hover:bg-white/[0.08]"
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : !data ? (
+        <div className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">Failed to load preview data</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {displaySections.map((s) => (
+            <PreviewSection key={s.id} id={s.id} label={s.label} data={data[s.id]} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

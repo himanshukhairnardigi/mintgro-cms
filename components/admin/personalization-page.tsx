@@ -1,96 +1,171 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Save, Plus, X } from "lucide-react";
+import { PersonalizationData } from "@/lib/types";
 import Toast from "@/components/admin/Toast";
-import type { PersonalizationData } from "@/lib/types";
 
 export default function PersonalizationPage() {
   const [data, setData] = useState<PersonalizationData | null>(null);
-  const [toast, setToast] = useState({ show: false, message: "" });
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: "" });
 
   useEffect(() => {
-    fetch("/api/personalization").then((r) => r.json()).then(setData);
+    fetch("/api/personalization")
+      .then((r) => r.json())
+      .then(setData);
   }, []);
 
-  if (!data) return <div className="p-8 text-muted-foreground text-xs animate-pulse">Loading...</div>;
-
-  const update = (path: string, value: unknown) => {
-    const copy = JSON.parse(JSON.stringify(data));
-    const keys = path.split(".");
-    let obj = copy;
-    for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
-    obj[keys[keys.length - 1]] = value;
-    setData(copy);
-  };
-
-  const addFeature = () => setData({ ...data, features: [...data.features, { id: `pf${Date.now()}`, icon: "Sparkles", title: "New Feature", description: "Description" }] });
-  const removeFeature = (i: number) => setData({ ...data, features: data.features.filter((_, idx) => idx !== i) });
+  const update = useCallback(
+    (path: string, value: unknown) => {
+      if (!data) return;
+      const copy = JSON.parse(JSON.stringify(data));
+      const keys = path.split(".");
+      let obj: Record<string, unknown> = copy;
+      for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]] as Record<string, unknown>;
+      obj[keys[keys.length - 1]] = value;
+      setData(copy as PersonalizationData);
+    },
+    [data]
+  );
 
   const save = async () => {
+    if (!data) return;
     setSaving(true);
-    await fetch("/api/personalization", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    await fetch("/api/personalization", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     setSaving(false);
     setToast({ show: true, message: "Personalization saved" });
   };
 
+  const addFeature = () => {
+    if (!data) return;
+    setData({
+      ...data,
+      features: [
+        ...data.features,
+        { id: crypto.randomUUID(), icon: "", title: "", description: "" },
+      ],
+    });
+  };
+
+  const removeFeature = (index: number) => {
+    if (!data) return;
+    setData({ ...data, features: data.features.filter((_, i) => i !== index) });
+  };
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="shimmer w-48 h-8 rounded-lg" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 animate-fade-up">
+    <div className="space-y-8 animate-fade-up">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold tracking-tight">Personalization</h2>
-          <p className="text-xs text-muted-foreground mt-1">Manage the personalization features section</p>
+          <h1 className="text-2xl font-bold text-foreground">Personalization</h1>
+          <p className="text-muted-foreground mt-1">Manage personalization content and feature cards.</p>
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary"><Save className="w-4 h-4" /> {saving ? "Saving..." : "Save"}</button>
+        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+          <Save className="w-4 h-4" />
+          {saving ? "Saving..." : "Save"}
+        </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-5">
-        <h3 className="text-sm font-semibold">Content</h3>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Category Label</label>
-          <input className="input-modern" value={data.categoryLabel} onChange={(e) => update("categoryLabel", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Title</label>
-          <input className="input-modern" value={data.title} onChange={(e) => update("title", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Description</label>
-          <textarea className="input-modern" rows={2} value={data.description} onChange={(e) => update("description", e.target.value)} />
+      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Content</h2>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Category Label</label>
+            <input
+              type="text"
+              value={data.categoryLabel}
+              onChange={(e) => update("categoryLabel", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Title</label>
+            <input
+              type="text"
+              value={data.title}
+              onChange={(e) => update("title", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Description</label>
+            <textarea
+              value={data.description}
+              onChange={(e) => update("description", e.target.value)}
+              rows={3}
+              className="input-modern w-full resize-none"
+            />
+          </div>
         </div>
       </div>
 
       <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Features ({data.features.length})</h3>
-          <button onClick={addFeature} className="btn-secondary text-[10px]"><Plus className="w-3.5 h-3.5" /> Add Feature</button>
+          <h2 className="text-lg font-semibold text-foreground">Features</h2>
+          <button onClick={addFeature} className="btn-secondary flex items-center gap-2 text-sm">
+            <Plus className="w-4 h-4" />
+            Add Feature
+          </button>
         </div>
-        {data.features.map((f, i) => (
-          <div key={f.id} className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-muted-foreground">Feature {i + 1}</span>
-              <button onClick={() => removeFeature(i)} className="btn-danger p-1.5"><X className="w-3.5 h-3.5" /></button>
+        <div className="space-y-4">
+          {data.features.map((feature, i) => (
+            <div key={feature.id} className="rounded-xl border border-white/[0.04] bg-background/50 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Feature {i + 1}</span>
+                <button onClick={() => removeFeature(i)} className="btn-ghost text-destructive p-1.5">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground">Icon</label>
+                  <input
+                    type="text"
+                    value={feature.icon}
+                    onChange={(e) => update(`features.${i}.icon`, e.target.value)}
+                    placeholder="Icon name"
+                    className="input-modern w-full"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground">Title</label>
+                  <input
+                    type="text"
+                    value={feature.title}
+                    onChange={(e) => update(`features.${i}.title`, e.target.value)}
+                    placeholder="Title"
+                    className="input-modern w-full"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs text-muted-foreground">Description</label>
+                <textarea
+                  value={feature.description}
+                  onChange={(e) => update(`features.${i}.description`, e.target.value)}
+                  placeholder="Description"
+                  rows={2}
+                  className="input-modern w-full resize-none"
+                />
+              </div>
             </div>
-            <div className="grid sm:grid-cols-3 gap-3">
-              <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Icon</label>
-                <input className="input-modern" value={f.icon} onChange={(e) => { const c = [...data.features]; c[i] = { ...c[i], icon: e.target.value }; setData({ ...data, features: c }); }} />
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Title</label>
-                <input className="input-modern" value={f.title} onChange={(e) => { const c = [...data.features]; c[i] = { ...c[i], title: e.target.value }; setData({ ...data, features: c }); }} />
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
-                <input className="input-modern" value={f.description} onChange={(e) => { const c = [...data.features]; c[i] = { ...c[i], description: e.target.value }; setData({ ...data, features: c }); }} />
-              </div>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <Toast message={toast.message} show={toast.show} onClose={() => setToast({ show: false, message: "" })} />
+      <Toast show={toast.show} message={toast.message} onClose={() => setToast({ show: false, message: "" })} />
     </div>
   );
 }

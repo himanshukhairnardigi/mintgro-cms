@@ -1,32 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, Type, AlertTriangle, Boxes, Building2,
-  ListOrdered, DollarSign, HelpCircle, Mail, Settings, Eye,
-  Zap, LogOut, X, ChevronLeft, ChevronRight, Globe, Image,
-  Sparkles, MonitorSmartphone, Megaphone,
+  Zap,
+  LayoutDashboard,
+  Globe,
+  Type,
+  Image,
+  AlertTriangle,
+  Boxes,
+  Building2,
+  Sparkles,
+  MonitorSmartphone,
+  ListOrdered,
+  DollarSign,
+  HelpCircle,
+  Megaphone,
+  Mail,
+  Settings,
+  Eye,
+  ChevronLeft,
+  LogOut,
 } from "lucide-react";
-
-const nav = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "Header / Nav", href: "/admin/header", icon: Globe },
-  { label: "Hero", href: "/admin/hero", icon: Type },
-  { label: "Logo Bar", href: "/admin/logo-bar", icon: Image },
-  { label: "Challenges", href: "/admin/challenges", icon: AlertTriangle },
-  { label: "CRM & Features", href: "/admin/crm", icon: Boxes },
-  { label: "Industries", href: "/admin/industries", icon: Building2 },
-  { label: "Personalization", href: "/admin/personalization", icon: Sparkles },
-  { label: "Experience", href: "/admin/experience", icon: MonitorSmartphone },
-  { label: "Steps", href: "/admin/steps", icon: ListOrdered },
-  { label: "Pricing", href: "/admin/pricing", icon: DollarSign },
-  { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
-  { label: "CTA / Contact", href: "/admin/cta", icon: Megaphone },
-  { label: "Subscribers", href: "/admin/subscribers", icon: Mail },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
-  { label: "Preview", href: "/admin/preview", icon: Eye },
-];
 
 interface SidebarProps {
   mobileOpen: boolean;
@@ -35,96 +31,121 @@ interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollapse }: SidebarProps) {
+const navItems = [
+  { icon: LayoutDashboard, href: "/admin", label: "Dashboard" },
+  { icon: Globe, href: "/admin/header", label: "Header / Nav" },
+  { icon: Type, href: "/admin/hero", label: "Hero" },
+  { icon: Image, href: "/admin/logo-bar", label: "Logo Bar" },
+  { icon: AlertTriangle, href: "/admin/challenges", label: "Challenges" },
+  { icon: Boxes, href: "/admin/crm", label: "CRM & Features" },
+  { icon: Building2, href: "/admin/industries", label: "Industries" },
+  { icon: Sparkles, href: "/admin/personalization", label: "Personalization" },
+  { icon: MonitorSmartphone, href: "/admin/experience", label: "Experience" },
+  { icon: ListOrdered, href: "/admin/steps", label: "Steps" },
+  { icon: DollarSign, href: "/admin/pricing", label: "Pricing" },
+  { icon: HelpCircle, href: "/admin/faq", label: "FAQ" },
+  { icon: Megaphone, href: "/admin/cta", label: "CTA / Contact" },
+  { icon: Mail, href: "/admin/subscribers", label: "Subscribers" },
+  { icon: Settings, href: "/admin/settings", label: "Settings" },
+  { icon: Eye, href: "/admin/preview", label: "Preview" },
+];
+
+function SidebarContent({ collapsed, onToggleCollapse, onLogout }: {
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+  onLogout: () => void;
+}) {
   const pathname = usePathname();
 
-  const sidebarContent = (
+  return (
     <div className="flex flex-col h-full">
-      <div className="h-16 flex items-center justify-between px-4 border-b border-white/[0.04] shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-            <Zap className="w-4.5 h-4.5 text-white" />
-          </div>
-          {!collapsed && (
-            <div className="animate-fade-in">
-              <span className="text-sm font-semibold tracking-tight">Mintgro</span>
-              <span className="text-[9px] text-primary font-mono bg-primary/10 px-1.5 py-0.5 rounded-md ml-2">CMS</span>
-            </div>
-          )}
+      <div className={`flex items-center gap-3 px-4 h-16 border-b border-border ${collapsed ? "justify-center" : ""}`}>
+        <div className="p-2 rounded-lg bg-primary/10 shrink-0">
+          <Zap className="w-5 h-5 text-primary" />
         </div>
-        <button onClick={onClose} className="lg:hidden w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center">
-          <X className="w-4 h-4 text-muted-foreground" />
-        </button>
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <span className="text-base font-bold text-foreground">Mintgro</span>
+            <span className="text-[10px] font-semibold bg-primary/10 text-primary px-1.5 py-0.5 rounded">CMS</span>
+          </div>
+        )}
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 px-3">
-        <div className="space-y-1">
-          {nav.map((item) => {
-            const isActive = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 group relative ${
-                  isActive
-                    ? "bg-primary/[0.08] text-primary shadow-[inset_0_0_0_1px_rgba(16,185,129,0.15)]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
-                } ${collapsed ? "justify-center" : ""}`}
-              >
-                <item.icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? "" : "group-hover:text-foreground"}`} />
-                {!collapsed && <span>{item.label}</span>}
-                {isActive && !collapsed && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
-                )}
-              </Link>
-            );
-          })}
-        </div>
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                collapsed ? "justify-center" : ""
+              } ${
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+              title={collapsed ? item.label : undefined}
+            >
+              <item.icon className="w-4.5 h-4.5 shrink-0" />
+              {!collapsed && <span>{item.label}</span>}
+            </Link>
+          );
+        })}
       </nav>
 
-      <div className="p-3 border-t border-white/[0.04] shrink-0">
+      <div className="p-2 border-t border-border space-y-1">
         <button
           onClick={onToggleCollapse}
-          className="hidden lg:flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-all duration-200"
+          className={`hidden lg:flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors ${
+            collapsed ? "justify-center" : ""
+          }`}
         >
-          {collapsed ? <ChevronRight className="w-[18px] h-[18px]" /> : <ChevronLeft className="w-[18px] h-[18px]" />}
+          <ChevronLeft className={`w-4.5 h-4.5 transition-transform ${collapsed ? "rotate-180" : ""}`} />
           {!collapsed && <span>Collapse</span>}
         </button>
 
-        <Link
-          href="/admin/login"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/[0.06] transition-all duration-200 mt-1"
+        <button
+          onClick={onLogout}
+          className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-destructive/80 hover:text-destructive hover:bg-destructive/5 transition-colors ${
+            collapsed ? "justify-center" : ""
+          }`}
         >
-          <LogOut className="w-[18px] h-[18px] shrink-0" />
-          {!collapsed && <span>Log Out</span>}
-        </Link>
+          <LogOut className="w-4.5 h-4.5 shrink-0" />
+          {!collapsed && <span>Logout</span>}
+        </button>
       </div>
     </div>
   );
+}
+
+export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollapse }: SidebarProps) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    document.cookie = "session=; path=/; max-age=0";
+    router.push("/admin/login");
+  };
 
   return (
     <>
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden" onClick={onClose}>
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-        </div>
-      )}
+      <div
+        className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
+          mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={onClose}
+      />
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#0d0d0d] border-r border-white/[0.04] lg:hidden transition-transform duration-300 ${
+        className={`fixed top-0 left-0 z-50 h-screen bg-sidebar border-r border-border transition-all duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        } lg:translate-x-0 ${collapsed ? "lg:w-[68px]" : "lg:w-64"} w-64`}
       >
-        {sidebarContent}
-      </aside>
-
-      <aside
-        className={`hidden lg:block fixed top-0 bottom-0 left-0 z-30 bg-[#0d0d0d] border-r border-white/[0.04] transition-all duration-300 ${
-          collapsed ? "w-[68px]" : "w-64"
-        }`}
-      >
-        {sidebarContent}
+        <SidebarContent
+          collapsed={collapsed}
+          onToggleCollapse={onToggleCollapse}
+          onLogout={handleLogout}
+        />
       </aside>
     </>
   );

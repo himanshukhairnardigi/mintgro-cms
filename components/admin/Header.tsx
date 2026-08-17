@@ -1,84 +1,69 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Menu, Bell, Search } from "lucide-react";
-
-const titles: Record<string, string> = {
-  "/admin": "Dashboard",
-  "/admin/header": "Header / Navigation",
-  "/admin/hero": "Hero Section",
-  "/admin/logo-bar": "Logo Bar",
-  "/admin/challenges": "Challenges",
-  "/admin/crm": "CRM & Features",
-  "/admin/industries": "Industries",
-  "/admin/personalization": "Personalization",
-  "/admin/experience": "Experience",
-  "/admin/steps": "How It Works",
-  "/admin/pricing": "Pricing Plans",
-  "/admin/faq": "FAQ",
-  "/admin/cta": "CTA / Contact",
-  "/admin/subscribers": "Subscribers",
-  "/admin/settings": "Settings",
-  "/admin/preview": "Live Preview",
-};
-
-const subtitles: Record<string, string> = {
-  "/admin": "Overview of your site content",
-  "/admin/header": "Manage navigation links and logo",
-  "/admin/hero": "Edit homepage hero content",
-  "/admin/logo-bar": "Manage trusted-by logo bar",
-  "/admin/challenges": "Manage challenges & solutions",
-  "/admin/crm": "Manage CRM spotlight & feature list",
-  "/admin/industries": "Configure industry cards",
-  "/admin/personalization": "Edit personalization features",
-  "/admin/experience": "Manage experience showcase",
-  "/admin/steps": "Manage onboarding steps",
-  "/admin/pricing": "Edit pricing tiers & features",
-  "/admin/faq": "Manage frequently asked questions",
-  "/admin/cta": "Edit call-to-action section",
-  "/admin/subscribers": "View & export subscribers",
-  "/admin/settings": "Global site configuration",
-  "/admin/preview": "Preview your live site",
-};
+import { Menu, Search, Bell, User } from "lucide-react";
 
 interface HeaderProps {
   onMenuClick: () => void;
 }
 
+const titles: Record<string, { title: string; subtitle: string }> = {
+  "/admin": { title: "Dashboard", subtitle: "Overview of your site" },
+  "/admin/header": { title: "Header / Navigation", subtitle: "Manage nav links and branding" },
+  "/admin/hero": { title: "Hero Section", subtitle: "Edit the main hero area" },
+  "/admin/logo-bar": { title: "Logo Bar", subtitle: "Social proof logos" },
+  "/admin/challenges": { title: "Challenges", subtitle: "Problems & solutions section" },
+  "/admin/crm": { title: "CRM & Features", subtitle: "Feature modules and stats" },
+  "/admin/industries": { title: "Industries", subtitle: "Industry cards" },
+  "/admin/personalization": { title: "Personalization", subtitle: "Personalization features" },
+  "/admin/experience": { title: "Experience", subtitle: "Device preview section" },
+  "/admin/steps": { title: "How It Works", subtitle: "Step-by-step process" },
+  "/admin/pricing": { title: "Pricing Plans", subtitle: "Tiers and pricing" },
+  "/admin/faq": { title: "FAQ", subtitle: "Frequently asked questions" },
+  "/admin/cta": { title: "CTA / Contact", subtitle: "Call to action section" },
+  "/admin/subscribers": { title: "Subscribers", subtitle: "Email subscribers" },
+  "/admin/settings": { title: "Settings", subtitle: "Site configuration" },
+  "/admin/preview": { title: "Live Preview", subtitle: "See your site live" },
+};
+
 export default function Header({ onMenuClick }: HeaderProps) {
   const pathname = usePathname();
-  const title = titles[pathname] || "Admin";
-  const subtitle = subtitles[pathname] || "";
+  const page = titles[pathname] ?? { title: "Admin", subtitle: "" };
 
   return (
-    <header className="sticky top-0 z-20 h-16 border-b border-white/[0.04] bg-background/80 backdrop-blur-md flex items-center justify-between px-4 md:px-6">
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onMenuClick}
-          className="lg:hidden w-9 h-9 rounded-xl hover:bg-white/[0.06] flex items-center justify-center transition-colors"
-        >
-          <Menu className="w-5 h-5 text-muted-foreground" />
-        </button>
-        <div>
-          <h1 className="text-sm font-semibold tracking-tight">{title}</h1>
-          <p className="text-[10px] text-muted-foreground hidden sm:block">{subtitle}</p>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs text-muted-foreground">
-          <Search className="w-3.5 h-3.5" />
-          <span>Search...</span>
-          <kbd className="text-[9px] font-mono bg-white/[0.06] px-1.5 py-0.5 rounded ml-2">⌘K</kbd>
+    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-xl">
+      <div className="flex items-center justify-between h-16 px-4 md:px-6 lg:px-8">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-base font-semibold text-foreground">{page.title}</h1>
+            <p className="text-xs text-muted-foreground hidden sm:block">{page.subtitle}</p>
+          </div>
         </div>
 
-        <button className="w-9 h-9 rounded-xl hover:bg-white/[0.06] flex items-center justify-center transition-colors relative">
-          <Bell className="w-4 h-4 text-muted-foreground" />
-          <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-1.5">
+            <Search className="w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-40"
+            />
+          </div>
 
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center text-[10px] font-bold text-white ml-1">
-          A
+          <button className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors">
+            <Bell className="w-5 h-5" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
+          </button>
+
+          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <User className="w-4 h-4 text-primary" />
+          </div>
         </div>
       </div>
     </header>

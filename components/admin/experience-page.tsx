@@ -1,113 +1,228 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Save, Plus, X } from "lucide-react";
+import { ExperienceData } from "@/lib/types";
 import Toast from "@/components/admin/Toast";
-import type { ExperienceData } from "@/lib/types";
 
 export default function ExperiencePage() {
   const [data, setData] = useState<ExperienceData | null>(null);
-  const [toast, setToast] = useState({ show: false, message: "" });
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: "" });
 
   useEffect(() => {
-    fetch("/api/experience").then((r) => r.json()).then(setData);
+    fetch("/api/experience")
+      .then((r) => r.json())
+      .then(setData);
   }, []);
 
-  if (!data) return <div className="p-8 text-muted-foreground text-xs animate-pulse">Loading...</div>;
-
-  const update = (path: string, value: unknown) => {
-    const copy = JSON.parse(JSON.stringify(data));
-    const keys = path.split(".");
-    let obj = copy;
-    for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
-    obj[keys[keys.length - 1]] = value;
-    setData(copy);
-  };
-
-  const addSidebar = () => setData({ ...data, sidebarItems: [...data.sidebarItems, "New item"] });
-  const removeSidebar = (i: number) => setData({ ...data, sidebarItems: data.sidebarItems.filter((_, idx) => idx !== i) });
-  const addStat = () => setData({ ...data, stats: [...data.stats, { label: "New", value: "0" }] });
-  const removeStat = (i: number) => setData({ ...data, stats: data.stats.filter((_, idx) => idx !== i) });
-  const addDevice = () => setData({ ...data, devices: [...data.devices, "New device"] });
-  const removeDevice = (i: number) => setData({ ...data, devices: data.devices.filter((_, idx) => idx !== i) });
+  const update = useCallback(
+    (path: string, value: unknown) => {
+      if (!data) return;
+      const copy = JSON.parse(JSON.stringify(data));
+      const keys = path.split(".");
+      let obj: Record<string, unknown> = copy;
+      for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]] as Record<string, unknown>;
+      obj[keys[keys.length - 1]] = value;
+      setData(copy as ExperienceData);
+    },
+    [data]
+  );
 
   const save = async () => {
+    if (!data) return;
     setSaving(true);
-    await fetch("/api/experience", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    await fetch("/api/experience", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     setSaving(false);
     setToast({ show: true, message: "Experience saved" });
   };
 
+  const addSidebarItem = () => {
+    if (!data) return;
+    setData({ ...data, sidebarItems: [...data.sidebarItems, ""] });
+  };
+
+  const removeSidebarItem = (index: number) => {
+    if (!data) return;
+    setData({ ...data, sidebarItems: data.sidebarItems.filter((_, i) => i !== index) });
+  };
+
+  const addStat = () => {
+    if (!data) return;
+    setData({ ...data, stats: [...data.stats, { label: "", value: "" }] });
+  };
+
+  const removeStat = (index: number) => {
+    if (!data) return;
+    setData({ ...data, stats: data.stats.filter((_, i) => i !== index) });
+  };
+
+  const addDevice = () => {
+    if (!data) return;
+    setData({ ...data, devices: [...data.devices, ""] });
+  };
+
+  const removeDevice = (index: number) => {
+    if (!data) return;
+    setData({ ...data, devices: data.devices.filter((_, i) => i !== index) });
+  };
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="shimmer w-48 h-8 rounded-lg" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 animate-fade-up">
+    <div className="space-y-8 animate-fade-up">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold tracking-tight">Experience</h2>
-          <p className="text-xs text-muted-foreground mt-1">Manage the experience showcase section</p>
+          <h1 className="text-2xl font-bold text-foreground">Experience Section</h1>
+          <p className="text-muted-foreground mt-1">Manage sidebar items, stats, and supported devices.</p>
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary"><Save className="w-4 h-4" /> {saving ? "Saving..." : "Save"}</button>
+        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2">
+          <Save className="w-4 h-4" />
+          {saving ? "Saving..." : "Save"}
+        </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-5">
-        <h3 className="text-sm font-semibold">Content</h3>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Eyebrow</label>
-          <input className="input-modern" value={data.eyebrow} onChange={(e) => update("eyebrow", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Title</label>
-          <input className="input-modern" value={data.title} onChange={(e) => update("title", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Description</label>
-          <textarea className="input-modern" rows={2} value={data.description} onChange={(e) => update("description", e.target.value)} />
-        </div>
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Sidebar Items</h3>
-            <button onClick={addSidebar} className="btn-secondary text-[10px]"><Plus className="w-3 h-3" /> Add</button>
+      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Content</h2>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Eyebrow</label>
+            <input
+              type="text"
+              value={data.eyebrow}
+              onChange={(e) => update("eyebrow", e.target.value)}
+              className="input-modern w-full"
+            />
           </div>
-          {data.sidebarItems.map((item: string, i: number) => (
-            <div key={i} className="flex items-center gap-2">
-              <input className="input-modern flex-1" value={item} onChange={(e) => { const c = [...data.sidebarItems]; c[i] = e.target.value; setData({ ...data, sidebarItems: c }); }} />
-              <button onClick={() => removeSidebar(i)} className="btn-danger p-1.5"><X className="w-3.5 h-3.5" /></button>
-            </div>
-          ))}
-        </div>
-
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Stats</h3>
-            <button onClick={addStat} className="btn-secondary text-[10px]"><Plus className="w-3 h-3" /> Add</button>
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Title</label>
+            <input
+              type="text"
+              value={data.title}
+              onChange={(e) => update("title", e.target.value)}
+              className="input-modern w-full"
+            />
           </div>
-          {data.stats.map((s, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <input className="input-modern flex-1" value={s.label} onChange={(e) => { const c = [...data.stats]; c[i] = { ...c[i], label: e.target.value }; setData({ ...data, stats: c }); }} placeholder="Label" />
-              <input className="input-modern w-24" value={s.value} onChange={(e) => { const c = [...data.stats]; c[i] = { ...c[i], value: e.target.value }; setData({ ...data, stats: c }); }} placeholder="Value" />
-              <button onClick={() => removeStat(i)} className="btn-danger p-1.5"><X className="w-3.5 h-3.5" /></button>
-            </div>
-          ))}
-        </div>
-
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Devices</h3>
-            <button onClick={addDevice} className="btn-secondary text-[10px]"><Plus className="w-3 h-3" /> Add</button>
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Description</label>
+            <textarea
+              value={data.description}
+              onChange={(e) => update("description", e.target.value)}
+              rows={3}
+              className="input-modern w-full resize-none"
+            />
           </div>
-          {data.devices.map((d: string, i: number) => (
-            <div key={i} className="flex items-center gap-2">
-              <input className="input-modern flex-1" value={d} onChange={(e) => { const c = [...data.devices]; c[i] = e.target.value; setData({ ...data, devices: c }); }} />
-              <button onClick={() => removeDevice(i)} className="btn-danger p-1.5"><X className="w-3.5 h-3.5" /></button>
-            </div>
-          ))}
         </div>
       </div>
 
-      <Toast message={toast.message} show={toast.show} onClose={() => setToast({ show: false, message: "" })} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Sidebar Items</h2>
+            <button onClick={addSidebarItem} className="btn-secondary flex items-center gap-2 text-sm">
+              <Plus className="w-4 h-4" />
+              Add
+            </button>
+          </div>
+          <div className="space-y-3">
+            {data.sidebarItems.map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground font-mono shrink-0 w-6">{i + 1}.</span>
+                <input
+                  type="text"
+                  value={item}
+                  onChange={(e) => {
+                    const next = [...data.sidebarItems];
+                    next[i] = e.target.value;
+                    setData({ ...data, sidebarItems: next });
+                  }}
+                  placeholder="Item label"
+                  className="input-modern flex-1"
+                />
+                <button onClick={() => removeSidebarItem(i)} className="btn-ghost text-destructive p-2">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Stats</h2>
+            <button onClick={addStat} className="btn-secondary flex items-center gap-2 text-sm">
+              <Plus className="w-4 h-4" />
+              Add
+            </button>
+          </div>
+          <div className="space-y-3">
+            {data.stats.map((stat, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <input
+                  type="text"
+                  value={stat.label}
+                  onChange={(e) => update(`stats.${i}.label`, e.target.value)}
+                  placeholder="Label"
+                  className="input-modern flex-1"
+                />
+                <input
+                  type="text"
+                  value={stat.value}
+                  onChange={(e) => update(`stats.${i}.value`, e.target.value)}
+                  placeholder="Value"
+                  className="input-modern w-28"
+                />
+                <button onClick={() => removeStat(i)} className="btn-ghost text-destructive p-2">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Devices</h2>
+            <button onClick={addDevice} className="btn-secondary flex items-center gap-2 text-sm">
+              <Plus className="w-4 h-4" />
+              Add
+            </button>
+          </div>
+          <div className="space-y-3">
+            {data.devices.map((device, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground font-mono shrink-0 w-6">{i + 1}.</span>
+                <input
+                  type="text"
+                  value={device}
+                  onChange={(e) => {
+                    const next = [...data.devices];
+                    next[i] = e.target.value;
+                    setData({ ...data, devices: next });
+                  }}
+                  placeholder="Device name"
+                  className="input-modern flex-1"
+                />
+                <button onClick={() => removeDevice(i)} className="btn-ghost text-destructive p-2">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <Toast show={toast.show} message={toast.message} onClose={() => setToast({ show: false, message: "" })} />
     </div>
   );
 }

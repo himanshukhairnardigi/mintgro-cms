@@ -1,135 +1,237 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Plus, X, Star } from "lucide-react";
-import Toast from "@/components/admin/Toast";
 import type { PricingData } from "@/lib/types";
+import { Plus, Trash2, Save, Loader2, Star } from "lucide-react";
+
+interface Toast {
+  show: boolean;
+  message: string;
+}
+
+function uid(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
 
 export default function PricingPage() {
   const [data, setData] = useState<PricingData | null>(null);
-  const [toast, setToast] = useState({ show: false, message: "" });
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<Toast>({ show: false, message: "" });
 
   useEffect(() => {
-    fetch("/api/pricing").then((r) => r.json()).then(setData);
+    fetch("/api/pricing")
+      .then((r) => r.json())
+      .then((d) => setData(d));
   }, []);
 
-  if (!data) return <div className="p-8 text-muted-foreground text-xs animate-pulse">Loading...</div>;
-
   const update = (path: string, value: unknown) => {
-    const copy = JSON.parse(JSON.stringify(data));
-    const keys = path.split(".");
-    let obj = copy;
-    for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
-    obj[keys[keys.length - 1]] = value;
-    setData(copy);
+    setData((prev) => {
+      if (!prev) return prev;
+      const keys = path.split(".");
+      const next = JSON.parse(JSON.stringify(prev)) as PricingData;
+      let obj: Record<string, unknown> = next as unknown as Record<string, unknown>;
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = isNaN(Number(keys[i])) ? keys[i] : Number(keys[i]);
+        obj = (obj[key] as Record<string, unknown>) ?? {};
+      }
+      const lastKey = isNaN(Number(keys[keys.length - 1])) ? keys[keys.length - 1] : Number(keys[keys.length - 1]);
+      obj[lastKey] = value;
+      return next;
+    });
   };
 
-  const addTier = () => setData({ ...data, tiers: [...data.tiers, { id: `p${Date.now()}`, name: "New Tier", price: 0, priceLabel: "per user / month", desc: "Description", features: [], cta: "Get Started", popular: false }] });
-  const removeTier = (i: number) => setData({ ...data, tiers: data.tiers.filter((_, idx) => idx !== i) });
-  const addFeature = (tierIdx: number) => {
-    const copy = JSON.parse(JSON.stringify(data));
-    copy.tiers[tierIdx].features.push("New feature");
-    setData(copy);
+  const addTier = () => {
+    setData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        tiers: [
+          ...prev.tiers,
+          { id: uid(), name: "", price: 0, priceLabel: "/month", desc: "", features: [], cta: "Get Started", popular: false },
+        ],
+      };
+    });
   };
-  const removeFeature = (tierIdx: number, featIdx: number) => {
-    const copy = JSON.parse(JSON.stringify(data));
-    copy.tiers[tierIdx].features.splice(featIdx, 1);
-    setData(copy);
+
+  const removeTier = (id: string) => {
+    setData((prev) => {
+      if (!prev) return prev;
+      return { ...prev, tiers: prev.tiers.filter((t) => t.id !== id) };
+    });
+  };
+
+  const addFeature = (tierIndex: number) => {
+    setData((prev) => {
+      if (!prev) return prev;
+      const next = JSON.parse(JSON.stringify(prev)) as PricingData;
+      next.tiers[tierIndex].features.push("");
+      return next;
+    });
+  };
+
+  const removeFeature = (tierIndex: number, featIndex: number) => {
+    setData((prev) => {
+      if (!prev) return prev;
+      const next = JSON.parse(JSON.stringify(prev)) as PricingData;
+      next.tiers[tierIndex].features.splice(featIndex, 1);
+      return next;
+    });
+  };
+
+  const updateFeature = (tierIndex: number, featIndex: number, value: string) => {
+    setData((prev) => {
+      if (!prev) return prev;
+      const next = JSON.parse(JSON.stringify(prev)) as PricingData;
+      next.tiers[tierIndex].features[featIndex] = value;
+      return next;
+    });
   };
 
   const save = async () => {
+    if (!data) return;
     setSaving(true);
-    await fetch("/api/pricing", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    await fetch("/api/pricing", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     setSaving(false);
     setToast({ show: true, message: "Pricing saved" });
   };
 
+  useEffect(() => {
+    if (!toast.show) return;
+    const t = setTimeout(() => setToast({ show: false, message: "" }), 2500);
+    return () => clearTimeout(t);
+  }, [toast.show]);
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 animate-fade-up">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold tracking-tight">Pricing Plans</h2>
-          <p className="text-xs text-muted-foreground mt-1">Manage pricing tiers, features, and the section header</p>
+    <div className="space-y-6">
+      {toast.show && (
+        <div className="fixed top-4 right-4 z-50 rounded-xl bg-emerald-500/90 backdrop-blur text-white px-5 py-3 text-sm font-medium shadow-lg animate-fade-up">
+          {toast.message}
         </div>
-        <button onClick={save} disabled={saving} className="btn-primary"><Save className="w-4 h-4" /> {saving ? "Saving..." : "Save"}</button>
+      )}
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Pricing</h1>
+          <p className="text-muted-foreground mt-1">Manage pricing tiers and section header</p>
+        </div>
+        <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-2 self-start">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          Save
+        </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-5">
-        <h3 className="text-sm font-semibold">Section Header</h3>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Eyebrow</label>
-          <input className="input-modern" value={data.eyebrow} onChange={(e) => update("eyebrow", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Title</label>
-          <input className="input-modern" value={data.title} onChange={(e) => update("title", e.target.value)} />
-        </div>
-        <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Description</label>
-          <textarea className="input-modern" rows={2} value={data.description} onChange={(e) => update("description", e.target.value)} />
+      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Section Header</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">Eyebrow</label>
+            <input value={data.eyebrow} onChange={(e) => update("eyebrow", e.target.value)} className="input-modern w-full" />
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">Title</label>
+            <input value={data.title} onChange={(e) => update("title", e.target.value)} className="input-modern w-full" />
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">Description</label>
+            <input value={data.description} onChange={(e) => update("description", e.target.value)} className="input-modern w-full" />
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <button onClick={addTier} className="btn-secondary"><Plus className="w-4 h-4" /> Add Tier</button>
-      </div>
-
-      <div className="grid gap-6">
+      <div className="space-y-4">
         {data.tiers.map((tier, ti) => (
-          <div key={tier.id} className={`rounded-2xl border bg-card p-6 space-y-4 ${tier.popular ? "border-primary/30 shadow-[0_0_30px_rgba(16,185,129,0.08)]" : "border-white/[0.06]"}`}>
+          <div key={tier.id} className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-medium text-muted-foreground">Tier {ti + 1}</span>
-                {tier.popular && <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full flex items-center gap-1"><Star className="w-3 h-3" /> Popular</span>}
-              </div>
               <div className="flex items-center gap-2">
-                <label className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                  <input type="checkbox" checked={tier.popular} onChange={(e) => { const c = JSON.parse(JSON.stringify(data)); c.tiers[ti].popular = e.target.checked; setData(c); }} className="accent-primary" />
-                  Mark popular
+                <Star className="w-5 h-5 text-amber-400" />
+                <h3 className="text-lg font-semibold text-foreground">Tier {ti + 1}</h3>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={tier.popular}
+                    onChange={(e) => update(`tiers.${ti}.popular`, e.target.checked)}
+                    className="rounded border-white/20"
+                  />
+                  Popular
                 </label>
-                <button onClick={() => removeTier(ti)} className="btn-danger"><X className="w-4 h-4" /> Remove</button>
+                <button onClick={() => removeTier(tier.id)} className="btn-ghost text-destructive">
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
-            <div className="grid sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Name</label>
-                <input className="input-modern" value={tier.name} onChange={(e) => { const c = JSON.parse(JSON.stringify(data)); c.tiers[ti].name = e.target.value; setData(c); }} />
+                <label className="block text-xs text-muted-foreground mb-1">Name</label>
+                <input value={tier.name} onChange={(e) => update(`tiers.${ti}.name`, e.target.value)} className="input-modern w-full" />
               </div>
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Price (null for custom)</label>
-                <input className="input-modern" type="number" value={tier.price ?? ""} onChange={(e) => { const c = JSON.parse(JSON.stringify(data)); c.tiers[ti].price = e.target.value === "" ? null : Number(e.target.value); setData(c); }} />
+                <label className="block text-xs text-muted-foreground mb-1">Price</label>
+                {tier.price === null ? (
+                  <div className="input-modern w-full bg-muted/30 text-muted-foreground">Custom</div>
+                ) : (
+                  <input
+                    type="number"
+                    value={tier.price}
+                    onChange={(e) => {
+                      const val = e.target.value === "" ? null : Number(e.target.value);
+                      update(`tiers.${ti}.price`, val);
+                    }}
+                    className="input-modern w-full"
+                  />
+                )}
               </div>
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Price Label</label>
-                <input className="input-modern" value={tier.priceLabel} onChange={(e) => { const c = JSON.parse(JSON.stringify(data)); c.tiers[ti].priceLabel = e.target.value; setData(c); }} />
+                <label className="block text-xs text-muted-foreground mb-1">Price Label</label>
+                <input value={tier.priceLabel} onChange={(e) => update(`tiers.${ti}.priceLabel`, e.target.value)} className="input-modern w-full" />
               </div>
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">CTA Text</label>
-                <input className="input-modern" value={tier.cta} onChange={(e) => { const c = JSON.parse(JSON.stringify(data)); c.tiers[ti].cta = e.target.value; setData(c); }} />
+                <label className="block text-xs text-muted-foreground mb-1">Description</label>
+                <input value={tier.desc} onChange={(e) => update(`tiers.${ti}.desc`, e.target.value)} className="input-modern w-full" />
               </div>
-            </div>
-            <div>
-              <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
-              <input className="input-modern" value={tier.desc} onChange={(e) => { const c = JSON.parse(JSON.stringify(data)); c.tiers[ti].desc = e.target.value; setData(c); }} />
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">CTA</label>
+                <input value={tier.cta} onChange={(e) => update(`tiers.${ti}.cta`, e.target.value)} className="input-modern w-full" />
+              </div>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Features ({tier.features.length})</label>
-                <button onClick={() => addFeature(ti)} className="btn-secondary text-[10px] py-1 px-2"><Plus className="w-3 h-3" /> Add</button>
-              </div>
-              {tier.features.map((feat: string, fi: number) => (
+              <label className="block text-xs text-muted-foreground">Features</label>
+              {tier.features.map((feat, fi) => (
                 <div key={fi} className="flex items-center gap-2">
-                  <input className="input-modern flex-1" value={feat} onChange={(e) => { const c = JSON.parse(JSON.stringify(data)); c.tiers[ti].features[fi] = e.target.value; setData(c); }} />
-                  <button onClick={() => removeFeature(ti, fi)} className="btn-danger p-1.5"><X className="w-3.5 h-3.5" /></button>
+                  <input
+                    value={feat}
+                    onChange={(e) => updateFeature(ti, fi, e.target.value)}
+                    className="input-modern flex-1"
+                  />
+                  <button onClick={() => removeFeature(ti, fi)} className="btn-ghost text-destructive">
+                    <Trash2 className="w-3 h-3" />
+                  </button>
                 </div>
               ))}
+              <button onClick={() => addFeature(ti)} className="btn-ghost text-sm flex items-center gap-1">
+                <Plus className="w-3 h-3" /> Add Feature
+              </button>
             </div>
           </div>
         ))}
+        <button onClick={addTier} className="btn-secondary flex items-center gap-2">
+          <Plus className="w-4 h-4" />
+          Add Tier
+        </button>
       </div>
-
-      <Toast message={toast.message} show={toast.show} onClose={() => setToast({ show: false, message: "" })} />
     </div>
   );
 }
