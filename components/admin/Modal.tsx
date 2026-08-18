@@ -45,7 +45,7 @@ export default function Modal({ open, onClose, title, subtitle, children, wide }
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

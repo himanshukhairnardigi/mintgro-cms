@@ -9,9 +9,9 @@ interface StatsCardProps {
 
 const colorMap: Record<NonNullable<StatsCardProps["color"]>, { bg: string; text: string; ring: string }> = {
   primary: { bg: "bg-primary/10", text: "text-primary", ring: "ring-primary/20" },
-  blue: { bg: "bg-blue-500/10", text: "text-blue-400", ring: "ring-blue-500/20" },
-  purple: { bg: "bg-purple-500/10", text: "text-purple-400", ring: "ring-purple-500/20" },
-  amber: { bg: "bg-amber-500/10", text: "text-amber-400", ring: "ring-amber-500/20" },
+  blue: { bg: "bg-blue-500/10", text: "text-blue-600", ring: "ring-blue-500/20" },
+  purple: { bg: "bg-purple-500/10", text: "text-purple-600", ring: "ring-purple-500/20" },
+  amber: { bg: "bg-amber-500/10", text: "text-amber-600", ring: "ring-amber-500/20" },
 };
 
 export default function StatsCard({ icon: Icon, label, value, color = "primary" }: StatsCardProps) {

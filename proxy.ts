@@ -6,8 +6,7 @@ export function proxy(request: NextRequest) {
 
   if (
     pathname.startsWith("/admin") &&
-    !pathname.startsWith("/admin/login") &&
-    !pathname.startsWith("/admin/api")
+    !pathname.startsWith("/admin/login")
   ) {
     const session = request.cookies.get("session");
     if (!session) {
@@ -15,9 +14,16 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/site-data")) {
+    const session = request.cookies.get("session");
+    if (!session && request.method !== "GET") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/:path*"],
 };

@@ -152,7 +152,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Hero Welcome Banner */}
-      <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl border border-white/[0.06] p-6">
+      <div className="cms-section-card bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Welcome back</p>
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
               <Link
                 key={s.href}
                 href={s.href}
-                className="glass-card rounded-xl border border-border p-4 hover:border-primary/30 transition-all group cursor-pointer"
+                className="cms-section-card group cursor-pointer"
               >
                 <div className="flex items-start gap-3">
                   <div className={`p-2.5 rounded-lg ${s.bg} shrink-0`}>
@@ -205,7 +205,7 @@ export default function AdminDashboard() {
                         {s.name}
                       </h4>
                       {count !== null && (
-                        <span className="text-xs font-semibold text-muted-foreground bg-white/[0.05] rounded-md px-1.5 py-0.5 shrink-0">
+                        <span className="text-xs font-semibold text-muted-foreground bg-gray-100 rounded-md px-1.5 py-0.5 shrink-0">
                           {count}
                         </span>
                       )}
@@ -222,13 +222,13 @@ export default function AdminDashboard() {
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Subscribers */}
-        <div className="glass-card rounded-2xl border border-border p-5">
+        <div className="cms-section-card">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
               <Mail className="w-4 h-4 text-primary" />
               Recent Subscribers
             </h3>
-            <span className="text-xs text-muted-foreground bg-white/[0.05] rounded-md px-2 py-0.5">
+            <span className="text-xs text-muted-foreground bg-gray-100 rounded-md px-2 py-0.5">
               Last 5
             </span>
           </div>
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
               .map((sub) => (
                 <div
                   key={sub.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-border"
+                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-border"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Content Summary */}
-        <div className="glass-card rounded-2xl border border-border p-5">
+        <div className="cms-section-card">
           <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
             <Globe className="w-4 h-4 text-primary" />
             Content Summary
@@ -276,7 +276,7 @@ export default function AdminDashboard() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-border"
+                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-border"
               >
                 <item.icon className="w-4 h-4 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">

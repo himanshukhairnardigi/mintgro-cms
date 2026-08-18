@@ -90,7 +90,7 @@ export default function ChallengesPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Content</h2>
         <div className="space-y-4">
           <div>
@@ -124,7 +124,7 @@ export default function ChallengesPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-red-400">Problems</h2>
             <button onClick={addProblem} className="btn-secondary flex items-center gap-2 text-sm">
@@ -155,7 +155,7 @@ export default function ChallengesPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-green-400">Solutions</h2>
             <button onClick={addSolution} className="btn-secondary flex items-center gap-2 text-sm">

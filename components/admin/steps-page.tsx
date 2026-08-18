@@ -116,10 +116,10 @@ export default function StepsPage() {
         </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <div className="space-y-4">
           {data.map((step, i) => (
-            <div key={step.id} className="flex items-start gap-3 p-4 rounded-xl border border-white/[0.06] bg-background/50 space-y-3">
+            <div key={step.id} className="flex items-start gap-3 p-4 rounded-xl border border-border bg-background/50 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 flex-1">
                 <div>
                   <label className="block text-xs text-muted-foreground mb-1">Step</label>

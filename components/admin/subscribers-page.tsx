@@ -40,11 +40,15 @@ export default function SubscribersPage() {
       setData(updated);
       setNewEmail("");
       setToast({ show: true, message: "Subscriber added" });
-      await fetch("/api/subscribers", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
-      });
+      try {
+        await fetch("/api/subscribers", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updated),
+        });
+      } catch {
+        setToast({ show: true, message: "Subscriber added but failed to sync" });
+      }
     } catch {
       setToast({ show: true, message: "Failed to add subscriber" });
     }
@@ -120,7 +124,7 @@ export default function SubscribersPage() {
         </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Add Subscriber</h2>
         <div className="flex items-center gap-3">
           <input
@@ -138,14 +142,14 @@ export default function SubscribersPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Subscribers ({data.length})</h2>
         {data.length === 0 ? (
           <p className="text-sm text-muted-foreground">No subscribers yet.</p>
         ) : (
           <div className="space-y-2">
             {data.map((sub) => (
-              <div key={sub.id} className="flex items-center justify-between p-4 rounded-xl border border-white/[0.06] bg-background/50 space-y-3">
+              <div key={sub.id} className="flex items-center justify-between p-4 rounded-xl border border-border bg-background/50">
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-muted-foreground" />
                   <div>

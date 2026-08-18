@@ -95,7 +95,7 @@ export default function CTAPage() {
         </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Content</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -118,7 +118,7 @@ export default function CTAPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">CTAs</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="space-y-3">

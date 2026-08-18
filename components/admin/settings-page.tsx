@@ -115,7 +115,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">General</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -146,7 +146,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Danger Zone</h2>
         <p className="text-sm text-muted-foreground">
           Reset all data to factory defaults. This action is irreversible.

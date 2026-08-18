@@ -46,18 +46,18 @@ const sections: { id: keyof SiteData; label: string }[] = [
 ];
 
 const sectionEditLinks: Record<string, string> = {
-  header: "/admin/sections/header",
-  logoBar: "/admin/sections/logobar",
-  hero: "/admin/sections/hero",
-  challenges: "/admin/sections/challenges",
-  crm: "/admin/sections/crm",
-  industries: "/admin/sections/industries",
-  personalization: "/admin/sections/personalization",
-  experience: "/admin/sections/experience",
-  steps: "/admin/sections/steps",
-  pricing: "/admin/sections/pricing",
-  faq: "/admin/sections/faq",
-  ctaSection: "/admin/sections/cta",
+  header: "/admin/header",
+  logoBar: "/admin/logo-bar",
+  hero: "/admin/hero",
+  challenges: "/admin/challenges",
+  crm: "/admin/crm",
+  industries: "/admin/industries",
+  personalization: "/admin/personalization",
+  experience: "/admin/experience",
+  steps: "/admin/steps",
+  pricing: "/admin/pricing",
+  faq: "/admin/faq",
+  ctaSection: "/admin/cta",
 };
 
 function PreviewSection({
@@ -243,12 +243,10 @@ function PreviewSection({
       case "crm": {
         const d = data as CRMFeatureData;
         return (
-          <div className="rounded-xl bg-[#111b18] text-white p-6 space-y-4">
-            <span className="inline-block text-[10px] font-medium uppercase tracking-wider bg-white/10 text-white/70 px-3 py-1 rounded-full">
-              {d.badge}
-            </span>
-            <h3 className="text-lg font-bold">{d.title}</h3>
-            <p className="text-xs text-white/60 leading-relaxed">
+          <div className="rounded-xl bg-primary/5 border border-primary/10 p-6 space-y-4">
+            <span className="cms-preview-eyebrow">{d.badge}</span>
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               {d.description}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -256,28 +254,28 @@ function PreviewSection({
                 {d.featureList?.map((f, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-2.5 bg-white/5 rounded-lg px-3 py-2"
+                    className="flex items-center gap-2.5 bg-white rounded-lg px-3 py-2 border border-border"
                   >
                     <span className="text-base">{f.icon}</span>
-                    <span className="text-xs text-white/80">{f.label}</span>
+                    <span className="text-xs text-foreground">{f.label}</span>
                   </div>
                 ))}
               </div>
-              <div className="bg-white/5 rounded-xl p-4 space-y-3 border border-white/10">
-                <p className="text-[10px] font-medium text-white/40 uppercase tracking-wider">
+              <div className="bg-white rounded-xl p-4 space-y-3 border border-border">
+                <p className="cms-section-label">
                   {d.categoryLabel}
                 </p>
-                <h4 className="text-sm font-semibold">{d.featureTitle}</h4>
-                <p className="text-[11px] text-white/50 leading-relaxed">
+                <h4 className="text-sm font-semibold text-foreground">{d.featureTitle}</h4>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
                   {d.featureDescription}
                 </p>
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   {d.dashboardStats?.map((stat, i) => (
-                    <div key={i} className="bg-white/5 rounded-lg p-2.5 text-center">
-                      <p className="text-sm font-bold text-[#4ade80]">
+                    <div key={i} className="bg-gray-50 rounded-lg p-2.5 text-center">
+                      <p className="text-sm font-bold text-primary">
                         {stat.value}
                       </p>
-                      <p className="text-[9px] text-white/40 mt-0.5">
+                      <p className="text-[9px] text-muted-foreground mt-0.5">
                         {stat.label}
                       </p>
                     </div>
@@ -316,25 +314,25 @@ function PreviewSection({
       case "personalization": {
         const d = data as PersonalizationData;
         return (
-          <div className="rounded-xl bg-[#111b18] text-white p-6 space-y-4">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-[#4ade80]">
+          <div className="rounded-xl bg-primary/5 border border-primary/10 p-6 space-y-4">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-primary">
               {d.categoryLabel}
             </span>
-            <h3 className="text-lg font-bold">{d.title}</h3>
-            <p className="text-xs text-white/60 leading-relaxed">
+            <h3 className="text-lg font-bold text-foreground">{d.title}</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               {d.description}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
               {d.features?.map((f) => (
                 <div
                   key={f.id}
-                  className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-1.5"
+                  className="bg-white border border-border rounded-xl p-4 space-y-1.5"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-base">{f.icon}</span>
-                    <span className="text-xs font-semibold">{f.title}</span>
+                    <span className="text-xs font-semibold text-foreground">{f.title}</span>
                   </div>
-                  <p className="text-[11px] text-white/50 leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
                     {f.description}
                   </p>
                 </div>
@@ -600,7 +598,7 @@ function PreviewSection({
               <span className="bg-white text-[#008d69] text-xs font-semibold px-5 py-2.5 rounded-lg">
                 {d.ctaPrimary?.label}
               </span>
-              <span className="bg-white/10 border border-white/20 text-white text-xs font-medium px-5 py-2.5 rounded-lg">
+              <span className="bg-white/20 border border-white/30 text-white text-xs font-medium px-5 py-2.5 rounded-lg">
                 {d.ctaSecondary?.label}
               </span>
             </div>
@@ -618,14 +616,12 @@ function PreviewSection({
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-card p-6 relative group">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {label}
-        </p>
+    <div className="cms-preview-section group">
+      <div className="cms-preview-header">
+        <p className="cms-section-label">{label}</p>
         <Link
           href={sectionEditLinks[id] || "#"}
-          className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-[#008d69] transition-colors opacity-0 group-hover:opacity-100"
+          className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
         >
           <Pencil className="w-3 h-3" />
           Edit
@@ -709,110 +705,84 @@ export default function PreviewPage() {
     : sections;
 
   return (
-    <div className="min-h-screen">
-      {/* ─── Top Bar ─── */}
-      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-border">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-lg font-bold text-foreground">Live Preview</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              See how your site looks before publishing
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => window.location.reload()}
-              disabled={loading}
-              className="btn-secondary flex items-center gap-2"
-            >
-              <RefreshCw
-                className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </button>
-            <a
-              href="/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary flex items-center gap-2"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Open Live Site
-            </a>
-          </div>
+    <div className="space-y-4 animate-fade-up">
+      {/* ─── Actions Bar ─── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.location.reload()}
+            disabled={loading}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary flex items-center gap-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Open Live Site
+          </a>
         </div>
       </div>
 
       {/* ─── Section Tabs ─── */}
-      <div className="sticky top-[65px] z-10 bg-background border-b border-border">
-        <div className="flex items-center gap-1.5 px-6 py-2.5 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+        <button
+          onClick={() => setActive(null)}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+            !active
+              ? "bg-primary text-primary-foreground"
+              : "bg-gray-100 text-muted-foreground hover:bg-gray-200"
+          }`}
+        >
+          All
+        </button>
+        {sections.map((s) => (
           <button
-            onClick={() => setActive(null)}
+            key={s.id}
+            onClick={() => setActive(s.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
-              !active
+              active === s.id
                 ? "bg-primary text-primary-foreground"
-                : "bg-white/[0.04] text-muted-foreground hover:bg-white/[0.08]"
+                : "bg-gray-100 text-muted-foreground hover:bg-gray-200"
             }`}
           >
-            All
+            {s.label}
           </button>
-          {sections.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setActive(s.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
-                active === s.id
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-white/[0.04] text-muted-foreground hover:bg-white/[0.08]"
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
+        ))}
       </div>
 
       {/* ─── Content ─── */}
-      <div className="p-6">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-[#008d69]" />
-            <p className="text-sm text-muted-foreground">
-              Loading preview data...
-            </p>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center h-64 gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-[#008d69]" />
+          <p className="text-sm text-muted-foreground">Loading preview data...</p>
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center h-64 gap-3">
+          <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
+            <XCircle className="w-6 h-6 text-red-500" />
           </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-3">
-            <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
-              <XCircle className="w-6 h-6 text-red-500" />
-            </div>
-            <p className="text-sm text-destructive">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-secondary text-xs"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : !data ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-3">
-            <p className="text-sm text-muted-foreground">
-              No preview data available
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4 max-w-5xl mx-auto">
-            {displaySections.map((s) => (
-              <PreviewSection
-                key={s.id}
-                id={s.id}
-                label={s.label}
-                data={data[s.id]}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+          <p className="text-sm text-destructive">{error}</p>
+          <button onClick={() => window.location.reload()} className="btn-secondary text-xs">
+            Try Again
+          </button>
+        </div>
+      ) : !data ? (
+        <div className="flex flex-col items-center justify-center h-64 gap-3">
+          <p className="text-sm text-muted-foreground">No preview data available</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {displaySections.map((s) => (
+            <PreviewSection key={s.id} id={s.id} label={s.label} data={data[s.id]} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -146,7 +146,7 @@ export default function PricingPage() {
         </button>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Section Header</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -166,10 +166,10 @@ export default function PricingPage() {
 
       <div className="space-y-4">
         {data.tiers.map((tier, ti) => (
-          <div key={tier.id} className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+          <div key={tier.id} className="rounded-2xl border border-border bg-card p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-400" />
+                <Star className="w-5 h-5 text-amber-600" />
                 <h3 className="text-lg font-semibold text-foreground">Tier {ti + 1}</h3>
               </div>
               <div className="flex items-center gap-3">
@@ -178,7 +178,7 @@ export default function PricingPage() {
                     type="checkbox"
                     checked={tier.popular}
                     onChange={(e) => update(`tiers.${ti}.popular`, e.target.checked)}
-                    className="rounded border-white/20"
+                    className="rounded border-border"
                   />
                   Popular
                 </label>
@@ -210,7 +210,7 @@ export default function PricingPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        const copy = JSON.parse(JSON.stringify(data));
+                        const copy = JSON.parse(JSON.stringify(data)) as PricingData;
                         copy.tiers[ti].price = null;
                         setData(copy);
                       }}

@@ -86,7 +86,7 @@ export default function HeaderPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Logo</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -110,7 +110,7 @@ export default function HeaderPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="text-lg font-semibold text-foreground">Navigation Links</h2>
           <button onClick={addNavLink} className="btn-secondary flex items-center gap-2 text-sm">
@@ -152,7 +152,7 @@ export default function HeaderPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">CTA Button</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

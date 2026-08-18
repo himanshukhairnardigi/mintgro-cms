@@ -97,7 +97,7 @@ function SidebarTooltip({ children, label, show }: { children: React.ReactNode; 
     <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       {children}
       {hovered && (
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 rounded-lg bg-card border border-border text-xs font-medium text-foreground whitespace-nowrap z-[60] shadow-lg pointer-events-none">
+        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 rounded-lg bg-white border border-border text-xs font-medium text-foreground whitespace-nowrap z-[60] shadow-md pointer-events-none">
           {label}
         </div>
       )}
@@ -138,8 +138,8 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       <div className={`flex items-center gap-3 px-4 h-16 border-b border-border shrink-0 ${collapsed ? "justify-center" : ""}`}>
-        <div className="p-2 rounded-lg bg-primary/10 shrink-0">
-          <Zap className="w-5 h-5 text-primary" />
+        <div className="p-2 rounded-lg bg-primary shrink-0">
+          <Zap className="w-5 h-5 text-white" />
         </div>
         {!collapsed && (
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -151,14 +151,14 @@ function SidebarContent({
 
       {!collapsed && (
         <div className="px-3 pt-3 pb-1">
-          <div className="relative flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">
+          <div className="relative flex items-center gap-2 bg-gray-50 border border-border rounded-lg px-3 py-2">
             <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
             <input
               type="text"
               placeholder="Search pages..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent text-xs text-foreground placeholder:text-muted-foreground/50 outline-none flex-1 min-w-0"
+              className="bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none flex-1 min-w-0"
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery("")} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -177,7 +177,7 @@ function SidebarContent({
           return (
             <div key={group.label} className="mb-1">
               {!collapsed && !searchQuery && (
-                <div className="px-3 pt-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">
+                <div className="px-3 pt-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                   {group.label}
                 </div>
               )}
@@ -195,8 +195,8 @@ function SidebarContent({
                       collapsed ? "justify-center" : ""
                     } ${
                       active
-                        ? "bg-primary/10 text-primary shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-gray-100"
                     }`}
                     title={collapsed ? item.label : undefined}
                   >
@@ -228,7 +228,7 @@ function SidebarContent({
         <SidebarTooltip label={collapsed ? "Collapse sidebar" : ""} show={collapsed}>
           <button
             onClick={onToggleCollapse}
-            className={`hidden lg:flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors ${
+            className={`hidden lg:flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-gray-100 transition-colors ${
               collapsed ? "justify-center" : ""
             }`}
           >
@@ -240,7 +240,7 @@ function SidebarContent({
         <SidebarTooltip label={collapsed ? "Logout" : ""} show={collapsed}>
           <button
             onClick={onLogout}
-            className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-destructive/80 hover:text-destructive hover:bg-destructive/5 transition-colors ${
+            className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors ${
               collapsed ? "justify-center" : ""
             }`}
           >
@@ -264,14 +264,14 @@ export default function Sidebar({ mobileOpen, onClose, collapsed, onToggleCollap
   return (
     <>
       <div
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/30 z-40 lg:hidden transition-opacity duration-300 ${
           mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
       />
 
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen bg-sidebar border-r border-border transition-all duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 z-50 h-screen bg-white border-r border-border transition-all duration-300 ease-in-out ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 ${collapsed ? "lg:w-[68px]" : "lg:w-64"} w-64`}
       >

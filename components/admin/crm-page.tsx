@@ -104,61 +104,73 @@ export default function CRMPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Section Content</h2>
         <div className="space-y-4">
-          <label className="text-xs text-muted-foreground block mb-1">Badge</label>
-          <input
-            type="text"
-            value={data.badge}
-            onChange={(e) => update("badge", e.target.value)}
-            className="input-modern w-full"
-          />
-          <label className="text-xs text-muted-foreground block mb-1">Title</label>
-          <input
-            type="text"
-            value={data.title}
-            onChange={(e) => update("title", e.target.value)}
-            className="input-modern w-full"
-          />
-          <label className="text-xs text-muted-foreground block mb-1">Description</label>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Badge</label>
+            <input
+              type="text"
+              value={data.badge}
+              onChange={(e) => update("badge", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Title</label>
+            <input
+              type="text"
+              value={data.title}
+              onChange={(e) => update("title", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Description</label>
+            <textarea
+              value={data.description}
+              onChange={(e) => update("description", e.target.value)}
+              rows={3}
+              className="input-modern w-full resize-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">CRM Spotlight</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Category Label</label>
+            <input
+              type="text"
+              value={data.categoryLabel}
+              onChange={(e) => update("categoryLabel", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Feature Title</label>
+            <input
+              type="text"
+              value={data.featureTitle}
+              onChange={(e) => update("featureTitle", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground block mb-1">Feature Description</label>
           <textarea
-            value={data.description}
-            onChange={(e) => update("description", e.target.value)}
-            rows={3}
+            value={data.featureDescription}
+            onChange={(e) => update("featureDescription", e.target.value)}
+            rows={4}
             className="input-modern w-full resize-none"
           />
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">CRM Spotlight</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="text-xs text-muted-foreground block mb-1">Category Label</label>
-          <input
-            type="text"
-            value={data.categoryLabel}
-            onChange={(e) => update("categoryLabel", e.target.value)}
-            className="input-modern w-full"
-          />
-          <label className="text-xs text-muted-foreground block mb-1">Feature Title</label>
-          <input
-            type="text"
-            value={data.featureTitle}
-            onChange={(e) => update("featureTitle", e.target.value)}
-            className="input-modern w-full"
-          />
-        </div>
-        <label className="text-xs text-muted-foreground block mb-1">Feature Description</label>
-        <textarea
-          value={data.featureDescription}
-          onChange={(e) => update("featureDescription", e.target.value)}
-          rows={4}
-          className="input-modern w-full resize-none"
-        />
-      </div>
-
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Feature List</h2>
           <button onClick={addFeatureItem} className="btn-secondary flex items-center gap-2 text-sm">
@@ -191,7 +203,7 @@ export default function CRMPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Dashboard Stats</h2>
           <button onClick={addStat} className="btn-secondary flex items-center gap-2 text-sm">

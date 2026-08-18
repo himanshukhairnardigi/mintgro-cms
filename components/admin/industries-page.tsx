@@ -111,7 +111,7 @@ export default function IndustriesPage() {
 
       <div className="space-y-4">
         {data.map((industry, i) => (
-          <div key={industry.id} className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+          <div key={industry.id} className="rounded-2xl border border-border bg-card p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-muted-foreground">Industry {i + 1}</h3>
               <button onClick={() => removeIndustry(i)} className="btn-ghost text-destructive p-2">
@@ -119,32 +119,38 @@ export default function IndustriesPage() {
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <label className="text-xs text-muted-foreground block mb-1">Icon</label>
-              <select
-                value={industry.icon}
-                onChange={(e) => update(i, "icon", e.target.value)}
-                className="select-modern w-full"
-              >
-                {ICON_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-              <label className="text-xs text-muted-foreground block mb-1">Name</label>
-              <input
-                type="text"
-                value={industry.name}
-                onChange={(e) => update(i, "name", e.target.value)}
-                className="input-modern w-full"
-              />
-              <label className="text-xs text-muted-foreground block mb-1">Description</label>
-              <input
-                type="text"
-                value={industry.desc}
-                onChange={(e) => update(i, "desc", e.target.value)}
-                className="input-modern w-full"
-              />
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Icon</label>
+                <select
+                  value={industry.icon}
+                  onChange={(e) => update(i, "icon", e.target.value)}
+                  className="select-modern w-full"
+                >
+                  {ICON_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Name</label>
+                <input
+                  type="text"
+                  value={industry.name}
+                  onChange={(e) => update(i, "name", e.target.value)}
+                  className="input-modern w-full"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Description</label>
+                <input
+                  type="text"
+                  value={industry.desc}
+                  onChange={(e) => update(i, "desc", e.target.value)}
+                  className="input-modern w-full"
+                />
+              </div>
             </div>
           </div>
         ))}

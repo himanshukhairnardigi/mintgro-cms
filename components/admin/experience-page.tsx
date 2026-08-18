@@ -114,35 +114,41 @@ export default function ExperiencePage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Content</h2>
         <div className="space-y-4">
-          <label className="text-xs text-muted-foreground block mb-1">Eyebrow</label>
-          <input
-            type="text"
-            value={data.eyebrow}
-            onChange={(e) => update("eyebrow", e.target.value)}
-            className="input-modern w-full"
-          />
-          <label className="text-xs text-muted-foreground block mb-1">Title</label>
-          <input
-            type="text"
-            value={data.title}
-            onChange={(e) => update("title", e.target.value)}
-            className="input-modern w-full"
-          />
-          <label className="text-xs text-muted-foreground block mb-1">Description</label>
-          <textarea
-            value={data.description}
-            onChange={(e) => update("description", e.target.value)}
-            rows={3}
-            className="input-modern w-full resize-none"
-          />
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Eyebrow</label>
+            <input
+              type="text"
+              value={data.eyebrow}
+              onChange={(e) => update("eyebrow", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Title</label>
+            <input
+              type="text"
+              value={data.title}
+              onChange={(e) => update("title", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Description</label>
+            <textarea
+              value={data.description}
+              onChange={(e) => update("description", e.target.value)}
+              rows={3}
+              className="input-modern w-full resize-none"
+            />
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">Sidebar Items</h2>
             <button onClick={addSidebarItem} className="btn-secondary flex items-center gap-2 text-sm">
@@ -173,7 +179,7 @@ export default function ExperiencePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">Stats</h2>
             <button onClick={addStat} className="btn-secondary flex items-center gap-2 text-sm">
@@ -206,7 +212,7 @@ export default function ExperiencePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+        <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">Devices</h2>
             <button onClick={addDevice} className="btn-secondary flex items-center gap-2 text-sm">

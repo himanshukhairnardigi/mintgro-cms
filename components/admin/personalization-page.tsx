@@ -100,34 +100,40 @@ export default function PersonalizationPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Content</h2>
         <div className="space-y-4">
-          <label className="text-xs text-muted-foreground block mb-1">Category Label</label>
-          <input
-            type="text"
-            value={data.categoryLabel}
-            onChange={(e) => update("categoryLabel", e.target.value)}
-            className="input-modern w-full"
-          />
-          <label className="text-xs text-muted-foreground block mb-1">Title</label>
-          <input
-            type="text"
-            value={data.title}
-            onChange={(e) => update("title", e.target.value)}
-            className="input-modern w-full"
-          />
-          <label className="text-xs text-muted-foreground block mb-1">Description</label>
-          <textarea
-            value={data.description}
-            onChange={(e) => update("description", e.target.value)}
-            rows={3}
-            className="input-modern w-full resize-none"
-          />
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Category Label</label>
+            <input
+              type="text"
+              value={data.categoryLabel}
+              onChange={(e) => update("categoryLabel", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Title</label>
+            <input
+              type="text"
+              value={data.title}
+              onChange={(e) => update("title", e.target.value)}
+              className="input-modern w-full"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Description</label>
+            <textarea
+              value={data.description}
+              onChange={(e) => update("description", e.target.value)}
+              rows={3}
+              className="input-modern w-full resize-none"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Features</h2>
           <button onClick={addFeature} className="btn-secondary flex items-center gap-2 text-sm">
@@ -137,7 +143,7 @@ export default function PersonalizationPage() {
         </div>
         <div className="space-y-4">
           {data.features.map((feature, i) => (
-            <div key={feature.id} className="rounded-xl border border-white/[0.04] bg-background/50 p-4 space-y-3">
+            <div key={feature.id} className="rounded-xl border border-border/50 bg-background/50 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Feature {i + 1}</span>
                 <button onClick={() => removeFeature(i)} className="btn-ghost text-destructive p-2">
@@ -145,31 +151,37 @@ export default function PersonalizationPage() {
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <label className="text-xs text-muted-foreground block mb-1">Icon</label>
-                <input
-                  type="text"
-                  value={feature.icon}
-                  onChange={(e) => update(`features.${i}.icon`, e.target.value)}
-                  placeholder="Icon name"
-                  className="input-modern w-full"
-                />
-                <label className="text-xs text-muted-foreground block mb-1">Title</label>
-                <input
-                  type="text"
-                  value={feature.title}
-                  onChange={(e) => update(`features.${i}.title`, e.target.value)}
-                  placeholder="Title"
-                  className="input-modern w-full"
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Icon</label>
+                  <input
+                    type="text"
+                    value={feature.icon}
+                    onChange={(e) => update(`features.${i}.icon`, e.target.value)}
+                    placeholder="Icon name"
+                    className="input-modern w-full"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={feature.title}
+                    onChange={(e) => update(`features.${i}.title`, e.target.value)}
+                    placeholder="Title"
+                    className="input-modern w-full"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Description</label>
+                <textarea
+                  value={feature.description}
+                  onChange={(e) => update(`features.${i}.description`, e.target.value)}
+                  placeholder="Description"
+                  rows={2}
+                  className="input-modern w-full resize-none"
                 />
               </div>
-              <label className="text-xs text-muted-foreground block mb-1">Description</label>
-              <textarea
-                value={feature.description}
-                onChange={(e) => update(`features.${i}.description`, e.target.value)}
-                placeholder="Description"
-                rows={2}
-                className="input-modern w-full resize-none"
-              />
             </div>
           ))}
         </div>

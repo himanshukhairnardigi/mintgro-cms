@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed(!collapsed)}
       />
-      <div className={`transition-all duration-300 ${collapsed ? "lg:ml-[68px]" : "lg:ml-64"}`}>
+      <div className={`transition-all duration-300 ${collapsed ? "lg:ml-[68px]" : "lg:ml-64"} min-h-screen`}>
         <Header onMenuClick={() => setMobileOpen(true)} />
         <main className="p-4 md:p-6 lg:p-8">{children}</main>
       </div>

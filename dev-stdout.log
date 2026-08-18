@@ -1,0 +1,28 @@
+▲ Next.js 16.3.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.39:3000
+✓ Ready in 392ms
+✓ Running next.config.ts took 35ms
+
+ GET /api/site-data 200 in 616ms (next.js: 550ms, proxy.ts: 8ms, application-code: 58ms)
+○ Compiling / ...
+ GET / 200 in 5.0s (next.js: 4.7s, application-code: 363ms)
+ GET /admin/login 200 in 5.0s (next.js: 4.3s, proxy.ts: 346ms, application-code: 331ms)
+ GET /api/header 200 in 172ms (next.js: 157ms, proxy.ts: 5ms, application-code: 9ms)
+ GET /api/hero 200 in 110ms (next.js: 102ms, proxy.ts: 3ms, application-code: 6ms)
+ GET / 200 in 150ms (next.js: 9ms, application-code: 141ms)
+ GET /admin/login 200 in 54ms (next.js: 6ms, proxy.ts: 8ms, application-code: 40ms)
+ GET /admin/login 200 in 48ms (next.js: 4ms, proxy.ts: 6ms, application-code: 37ms)
+ GET /admin 200 in 458ms (next.js: 380ms, proxy.ts: 8ms, application-code: 71ms)
+ GET /admin/hero 200 in 228ms (next.js: 204ms, proxy.ts: 4ms, application-code: 20ms)
+ GET /api/hero 200 in 16ms (next.js: 3ms, proxy.ts: 7ms, application-code: 6ms)
+ GET /api/hero 200 in 12ms (next.js: 4ms, proxy.ts: 3ms, application-code: 5ms)
+✓ Compiled in 181ms
+✓ Compiled in 165ms
+ GET /admin/hero 200 in 42ms (next.js: 8ms, proxy.ts: 7ms, application-code: 26ms)
+ GET /admin/hero 200 in 25ms (next.js: 5ms, proxy.ts: 4ms, application-code: 17ms)
+✓ Compiled in 82ms
+ GET /admin/hero 200 in 49ms (next.js: 20ms, proxy.ts: 4ms, application-code: 25ms)
+ GET /admin/hero 200 in 24ms (next.js: 4ms, proxy.ts: 3ms, application-code: 17ms)
+ GET /admin/hero 200 in 33ms (next.js: 10ms, proxy.ts: 4ms, application-code: 20ms)
+✓ Compiled in 43ms

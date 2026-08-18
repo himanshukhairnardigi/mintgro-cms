@@ -1,4 +1,8 @@
 import { SiteData } from "./types";
+import fs from "fs";
+import path from "path";
+
+const DATA_FILE = path.join(process.cwd(), "site-data.json");
 
 const DEFAULT_DATA: SiteData = {
   header: {
@@ -193,7 +197,27 @@ const DEFAULT_DATA: SiteData = {
   },
 };
 
-let serverData: SiteData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+function loadFromDisk(): SiteData {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, "utf-8");
+      return JSON.parse(raw) as SiteData;
+    }
+  } catch {
+    // If file is corrupted, fall back to defaults
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function saveToDisk(data: SiteData): void {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  } catch {
+    // Silently fail if disk write fails
+  }
+}
+
+let serverData: SiteData = loadFromDisk();
 
 export function getData(): SiteData {
   return serverData;
@@ -201,11 +225,13 @@ export function getData(): SiteData {
 
 export function updateData(partial: Partial<SiteData>): SiteData {
   serverData = { ...serverData, ...partial };
+  saveToDisk(serverData);
   return serverData;
 }
 
 export function resetData(): SiteData {
   serverData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  saveToDisk(serverData);
   return serverData;
 }
 

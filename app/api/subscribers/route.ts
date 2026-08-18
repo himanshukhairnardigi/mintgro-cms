@@ -22,3 +22,10 @@ export async function PUT(request: Request) {
   const updated = updateData({ subscribers: body });
   return NextResponse.json(updated.subscribers);
 }
+
+export async function DELETE(request: Request) {
+  const { id } = await request.json();
+  const filtered = getData().subscribers.filter((s) => s.id !== id);
+  const updated = updateData({ subscribers: filtered });
+  return NextResponse.json(updated.subscribers);
+}
