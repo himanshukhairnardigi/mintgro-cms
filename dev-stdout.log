@@ -26,3 +26,6 @@
  GET /admin/hero 200 in 24ms (next.js: 4ms, proxy.ts: 3ms, application-code: 17ms)
  GET /admin/hero 200 in 33ms (next.js: 10ms, proxy.ts: 4ms, application-code: 20ms)
 ✓ Compiled in 43ms
+ GET /admin/logo-bar 200 in 797ms (next.js: 747ms, proxy.ts: 11ms, application-code: 40ms)
+ GET /api/logobar 200 in 162ms (next.js: 147ms, proxy.ts: 5ms, application-code: 10ms)
+ GET /api/logobar 200 in 13ms (next.js: 3ms, proxy.ts: 4ms, application-code: 6ms)
